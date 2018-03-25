@@ -1,8 +1,11 @@
 `timescale 1ns / 1ps
 
+// Dynamic memory module testbench
 module dmem_tb;
 
     parameter SIZE = 32;
+    parameter MIN = 0;
+    parameter MAX = 252;
 
 	// Inputs
 	bit clk;
@@ -38,28 +41,31 @@ module dmem_tb;
         wd = 32'bx;    
 
 		// Wait 20 ns for global reset to finish
-		#20;
+		#25;
+        
         
 		// Add stimulus here
+        // set data in dynamic memory
         we = 1'b1;
-        a = 32'd0;
-        wd = 32'd10;
-        #10;
+        for( int i=MIN; i < MAX; i+=4 ) begin
+            a = i;
+            wd = i;
+            #10;
+        end
 
-        we = 1'b1;
-        a = a + 32'd252;
-        wd = wd + 32'd1;
-        #10;
-
+        // break 10 ns 
         we = 1'b0;
         a = 32'dx;
+        wd = 32'dx;
         #10;
 
-        a = 32'd0;
-        #20;
+        // read data of dynamic memory
+        for( int i=MIN; i < MAX; i+=4 ) begin
+            a = i;
+            #10;
+        end
 
-        a = 32'd252;
-        #20;
+        $stop; //stop the simulation
 
 	end
 endmodule
