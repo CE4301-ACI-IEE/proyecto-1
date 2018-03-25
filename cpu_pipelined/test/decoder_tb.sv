@@ -43,6 +43,8 @@ module testbech_pattern_tb;
 		#20;
 		
 		// Add stimulus here
+    
+        // TODO
 
         $stop;
 

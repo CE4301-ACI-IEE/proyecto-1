@@ -34,7 +34,7 @@ always@(*) begin
 		
 		2'b10:	controls = 10'b0110100010; //B
 		
-		default: controls = 10'bx; //Sin implementar
+		default: controls = 10'bx; // DEfault
 		
 	endcase
 	
