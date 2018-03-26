@@ -3,7 +3,7 @@ module ALU
 (	
 	input logic 		clk,
 	input logic[47:0] 	OPERA,
-	input logic[47:0] 	OPERAB,
+	input logic[47:0] 	OPERB,
 	input logic[2:0]	ALUControlE,
 	output logic[47:0] 	ALUResultE,
 	output logic[3:0] 	ALUFlags
@@ -29,26 +29,26 @@ module ALU
 		
 		if(ALUControlE == 3'b000) //Vectorial sum
 		begin
-			Result[47:32] 	<= OPERAB[47:32]+PosA;
-			Result[31:16] 	<= OPERAB[31:16]+PosB;
-			Result[15:0]	<= OPERAB[15:0]+PosC;	
+			Result[47:32] 	<= OPERB[47:32]+PosA;
+			Result[31:16] 	<= OPERB[31:16]+PosB;
+			Result[15:0]	<= OPERB[15:0]+PosC;	
 		end else if(ALUControlE == 3'b001) //Producto Punto
 		begin
-			Result <= (OPERAB[47:32]*PosA) + (OPERAB[31:16]*PosB) + (OPERAB[15:0]*PosC);
+			Result <= (OPERB[47:32]*PosA) + (OPERB[31:16]*PosB) + (OPERB[15:0]*PosC);
 		end else if(ALUControlE == 3'b010) //Normal Subtraction
 		begin
-			Result = OPERA - OPERAB;
+			Result = OPERA - OPERB;
 		end else if (ALUControlE==3'b011) begin //Normal sum
-			Result = OPERA + OPERAB;
+			Result = OPERA + OPERB;
 		end else if (ALUControlE == 3'b100) begin //CMP
-			Result = OPERA - OPERAB;
+			Result = OPERA - OPERB;
 		end else if(ALUControlE == 3'b101) //Scale
 		begin
-			Result[47:32] 	<= PosA*OPERAB[15:0];
-			Result[31:16] 	<= PosB*OPERAB[15:0];
-			Result[15:0]	<= PosC*OPERAB[15:0];
+			Result[47:32] 	<= PosA*OPERB[15:0];
+			Result[31:16] 	<= PosB*OPERB[15:0];
+			Result[15:0]	<= PosC*OPERB[15:0];
 		end else if (ALUControlE == 3'b110) begin //Normal multiplication
-			Result = OPERA * OPERAB;
+			Result = OPERA * OPERB;
 		end else begin
 			Result = {48{1'b1}};
 		end
@@ -59,7 +59,7 @@ module ALU
 		if(Result == 48'b0)
 		begin
 			Flags_tmp = 4'b0100;
-		end else if (OPERAB > OPERA) begin
+		end else if (OPERB > OPERA) begin
 			Flags_tmp = 4'b1000;
 		end else if (Result > 48'b0) begin
 			Flags_tmp = 4'b0;
