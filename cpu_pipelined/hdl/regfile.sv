@@ -3,15 +3,15 @@ module regfile #(
     parameter SIZE = 32,
     parameter AMOUNT_REG = 4 )
 (
-input bit CLK,
-input bit WE3,
-input logic [AMOUNT_REG-1:0] RA1,
-input logic [AMOUNT_REG-1:0] RA2,
-input logic [AMOUNT_REG-1:0] RA3,
-input logic [SIZE-1:0] WD3,
-input logic [SIZE-1:0] R15,
-output logic [SIZE-1:0] RD1,
-output logic [SIZE-1:0] RD2
+    input bit CLK,
+    input bit WE3,
+    input logic [AMOUNT_REG-1:0] RA1,
+    input logic [AMOUNT_REG-1:0] RA2,
+    input logic [AMOUNT_REG-1:0] RA3,
+    input logic [SIZE-1:0] WD3,
+    input logic [SIZE-1:0] R15,
+    output logic [SIZE-1:0] RD1,
+    output logic [SIZE-1:0] RD2
 );
 
 logic [SIZE-1:0] rf[14:0];

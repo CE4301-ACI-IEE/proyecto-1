@@ -60,7 +60,7 @@ module dmem_tb;
         #10;
 
         // read data of dynamic memory
-        for( int i=MIN; i < MAX; i+=4 ) begin
+        for( int i=MIN; i <= MAX; i+=4 ) begin
             a = i;
             #10;
         end
