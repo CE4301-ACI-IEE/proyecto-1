@@ -3,8 +3,8 @@
 module flopr #(
     parameter SIZE = 32     
 )(
-    input bit CLK,
-    input bit reset,
+    input logic CLK,
+    input logic reset,
     input logic [SIZE-1:0] d,
     output logic [SIZE-1:0] q
 );

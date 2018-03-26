@@ -1,2 +1,6 @@
 cpu_pipelined/simulation/*
 cpu_pipelined/synthesis/*
+cpu_pipelined/work/*
+cpu_pipelined/simulation.cr.mti
+cpu_pipilined/simulation.mpf
+cpu_pipelined/transcript

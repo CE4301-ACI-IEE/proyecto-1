@@ -3,7 +3,7 @@
 module extend
 (input logic [23:0] Instr,
  input logic [1:0] ImmSrc, 
- output wire [31:0] ExtImm
+ output logic [31:0] ExtImm
 );
 
 reg [31:0] temp_ExtImm;
