@@ -3,7 +3,7 @@
 module adder #(
     parameter SIZE = 32
 )(
-    input bit CLK,
+    input logic CLK,
     input logic [SIZE-1:0] a,
     input logic [SIZE-1:0] b,
     output logic [SIZE-1:0] c

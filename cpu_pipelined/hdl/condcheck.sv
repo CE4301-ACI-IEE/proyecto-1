@@ -4,11 +4,11 @@
 module condcheck (
 input logic [3:0] Cond,
 input logic [3:0] Flags,
-output bit CondEx
+output logic CondEx
 );
 
-bit neg, zero, carry, overflow, ge;
-bit CondEx_temp;
+logic neg, zero, carry, overflow, ge;
+logic CondEx_temp;
 
 assign {neg, zero, carry, overflow} = Flags;
 assign ge = (neg == overflow);

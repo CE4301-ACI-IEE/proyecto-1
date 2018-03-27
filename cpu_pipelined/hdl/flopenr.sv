@@ -5,9 +5,9 @@ module flopenr #(
     parameter WIDTH = 8
 )
 (
-    input bit CLK,
-    input bit Reset,
-    input bit EN,
+    input logic CLK,
+    input logic Reset,
+    input logic EN,
     input logic [WIDTH-1:0] D,
     output logic [WIDTH-1:0] Q
 );

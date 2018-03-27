@@ -8,6 +8,6 @@ module mux2x1 #(parameter SIZE = 32)
     output logic [SIZE-1:0] y
 );
 
-assign y = s ? d0:d1;
+assign y = s ? d1:d0;
 
 endmodule

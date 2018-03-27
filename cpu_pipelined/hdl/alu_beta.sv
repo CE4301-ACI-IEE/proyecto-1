@@ -25,7 +25,7 @@ always@(*) begin
 end
 
 //always @(negsedge clk)     //para simular	(Result), para placa (negedge clk)			     //flags  [N,Z,C,V]
-always @(Result_temp)
+always @(negedge clk)
 begin
 	if(Result_temp == 32'd0)
 		Flags_temp <= 4'b0100;

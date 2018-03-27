@@ -3,8 +3,8 @@ module regfile #(
     parameter SIZE = 32,
     parameter AMOUNT_REG = 4 )
 (
-    input bit CLK,
-    input bit WE3,
+    input logic CLK,
+    input logic WE3,
     input logic [AMOUNT_REG-1:0] RA1,
     input logic [AMOUNT_REG-1:0] RA2,
     input logic [AMOUNT_REG-1:0] RA3,
