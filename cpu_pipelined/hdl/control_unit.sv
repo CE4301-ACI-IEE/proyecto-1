@@ -32,8 +32,8 @@ decoder dec( .Op(Instr[27:26]),
 				.RegSrc(RegSrc), 
 				.ALUControl(ALUControl) );
 
-condlogic cl( .clk(clk), 
-				 .reset(reset), 
+condlogic cl( .CLK(CLK), 
+				 .Reset(Reset), 
 				 .Cond(Instr[31:28]), 
 				 .ALUFlags(ALUFlags),
 				 .FlagW(FlagW), 

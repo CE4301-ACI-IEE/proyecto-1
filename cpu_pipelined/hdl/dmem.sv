@@ -2,7 +2,7 @@
 
 module dmem #( parameter SIZE = 32 )
 (
-    input bit CLK, WE,
+    input logic CLK, WE,
 	input logic [SIZE-1:0] A, WD,
 	output logic [SIZE-1:0] RD
 );

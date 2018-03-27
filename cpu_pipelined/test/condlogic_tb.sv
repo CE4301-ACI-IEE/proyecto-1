@@ -4,19 +4,19 @@
 module condlogic_tb;
 
 	// Inputs
-    bit clk;
-    bit reset;
+    logic clk;
+    logic reset;
     logic [3:0] cond;
     logic [3:0] alu_flags;
     logic [1:0] flag_w;
-    bit pcs;
-    bit reg_w;
-    bit mem_w;
+    logic pcs;
+    logic reg_w;
+    logic mem_w;
 	
 	//Outputs
-    bit pc_src;
-    bit reg_write;
-    bit mem_write;
+    logic pc_src;
+    logic reg_write;
+    logic mem_write;
 	
 	// Instantiate the Device Under Test (DUT)
 	condlogic DUT(
@@ -45,7 +45,11 @@ module condlogic_tb;
 	//Stimulus 
 	initial begin
 		// Initialize Inputs
-		
+        reset = 1'b1;
+		cond = 4'b1110;     // AL or none (Always/unconditional)
+        alu_flags = 4'b0000;
+        flag_w = 2'b00;
+
 		// Wait 20 ns for global reset to finish
 		#20;
 		

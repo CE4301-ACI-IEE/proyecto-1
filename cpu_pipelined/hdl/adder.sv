@@ -9,7 +9,7 @@ module adder #(
     output logic [SIZE-1:0] c
 );
     logic [SIZE-1:0] tmp;
-    always@(*)
+    always@( * )
     begin
         tmp <= a+b;
     end

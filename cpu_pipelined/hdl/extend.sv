@@ -1,9 +1,11 @@
 `timescale 1ns / 1ps
 
+// Extend module
 module extend
-(input logic [23:0] Instr,
- input logic [1:0] ImmSrc, 
- output logic [31:0] ExtImm
+(
+	input logic [23:0] Instr,
+ 	input logic [1:0] ImmSrc, 
+ 	output logic [31:0] ExtImm
 );
 
 reg [31:0] temp_ExtImm;
@@ -25,4 +27,5 @@ always@(*) begin
 end
 
 assign ExtImm = temp_ExtImm;
+
 endmodule

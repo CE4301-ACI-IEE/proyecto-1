@@ -40,6 +40,6 @@ extend ext(Instr[23:0], ImmSrc, ExtImm);
 
 // ALU logic
 mux2x1 #(32) srcBmux(ALUSrc, WriteData, ExtImm, SrcB);
-alu ALU(CLK, SrcA, SrcB, ALUControl, ALUResult, ALUFlags);
+alu_beta alu(CLK, SrcA, SrcB, ALUControl, ALUResult, ALUFlags);
 
 endmodule

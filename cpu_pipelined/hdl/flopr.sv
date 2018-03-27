@@ -9,12 +9,8 @@ module flopr #(
     output logic [SIZE-1:0] q
 );
 
-logic [SIZE-1:0] tmp;
-
-always@(negedge CLK,posedge reset)
-begin
-    if(reset) tmp <= 0;
-    else tmp <= d;
+always@( negedge CLK, posedge reset )begin
+    if( reset ) q <= {32{1'b0}};
+    else q <= d;
 end
-assign q = tmp;
 endmodule

@@ -2,22 +2,22 @@
 
 // Condition logic module
 module condlogic (
-input bit CLK,
-input bit Reset,
+input logic CLK,
+input logic Reset,
 input logic [3:0] Cond,
 input logic [3:0] ALUFlags,
 input logic [1:0] FlagW,
-input bit PCS,
-input bit RegW,
-input bit MemW,
-output bit PCSrc,
-output bit RegWrite,
-output bit MemWrite
+input logic PCS,
+input logic RegW,
+input logic MemW,
+output logic PCSrc,
+output logic RegWrite,
+output logic MemWrite
 );
 
 logic [1:0] FlagWrite;
 logic [3:0] Flags;
-bit CondEx;
+logic CondEx;
 
 flopenr #(2) flagreg1(CLK, Reset, FlagWrite[1],
 							  ALUFlags[3:2], Flags[3:2]);
