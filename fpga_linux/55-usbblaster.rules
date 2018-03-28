@@ -1,0 +1,2 @@
+# The USB Blaster UDEV entry in /etc/udev/rules.d/55-usbblaster.rules
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6001", MODE="0666"
