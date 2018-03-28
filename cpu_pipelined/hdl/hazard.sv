@@ -5,7 +5,8 @@ module hazard
     input   logic       RegWriteM, RegWriteW, MemToRegE, BranchTakenE, PCSrcD, PCSrcE, PCSrcM, PCSrcW,
     input   logic [5:0] RA1D, RA2D, RA1E, RA2E, WA3M, WA3W, WA3E,
     output  logic       StallF, StallD, FlushD, FlushE,
-    output  logic [1:0] FowardAE, FowardBE
+    output  logic [1:0] FowardAE, FowardBE,
+    output  logic [3:0] match
 );
 //creates temporal registers.
 logic [3:0] Match;
@@ -19,6 +20,7 @@ assign StallD = StallD_tmp;
 assign StallF = StallF_tmp;
 assign FlushD = FlushD_tmp;
 assign FlushE = FlushE_tmp;
+assign match = Match;
 initial begin
     Match = 4'b0;
     PCWrPendingF = 1'b0;
@@ -28,12 +30,8 @@ end
         Match[3] = (RA1E == WA3M);
         Match[2] = (RA1E == WA3W);
         Match[1] = (RA2E == WA3M);
-        Match[0] = (RA2E == WA3M);
-    end
+        Match[0] = (RA2E == WA3W);
 
-    //fowarding block
-    always@(*)
-    begin
         if(Match[3]&RegWriteM)
         begin
             FowardAE_tmp = 2'b10;

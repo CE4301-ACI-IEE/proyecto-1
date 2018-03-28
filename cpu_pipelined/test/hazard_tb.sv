@@ -9,6 +9,7 @@ logic [5:0] RA1D, RA2D, RA1E, RA2E, WA3M, WA3W, WA3E;
 //output 
 logic StallF, StallD, FlushD, FlushE;
 logic [1:0] FowardAE, FowardBE;
+logic [3:0] match;
 
 //instantiate the DUT
 hazard DUT(
@@ -32,11 +33,13 @@ hazard DUT(
     .FlushD(FlushD),
     .FlushE(FlushE),
     .FowardAE(FowardAE),
-    .FowardBE(FowardBE)
+    .FowardBE(FowardBE),
+    .match(match)
 );
 
 initial begin
     RegWriteM = 0;
+    RegWriteW = 0;
     RA1E = 6'b0;
     RA2E = 6'b0;
     WA3M = 6'b0;
@@ -45,6 +48,7 @@ initial begin
     #20
 
     RegWriteM = 1;
+    RegWriteW = 1;
     RA1E = 6'b000001;
     RA2E = 6'b000010;
     WA3M = 6'b0;
