@@ -30,7 +30,7 @@ module condlogic_tb;
         .MemW( mem_w ),
         .PCSrc( pc_src ),
         .RegWrite( reg_write ),
-        .MemWrite( mem_write ),
+        .MemWrite( mem_write )
     );
 
 	//Initialize clock
