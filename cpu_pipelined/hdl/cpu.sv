@@ -40,6 +40,10 @@ logic [31:0] write_data;
 logic [31:0] alu_result;
 logic [31:0] read_data;
 
+//Hazard Wires
+logic stallF, stallD, flushD, flushE;
+
+
 assign ReadData = read_data;
 assign MemWrite = mem_write;
 assign PC = pc;
@@ -79,10 +83,13 @@ decoder dec( .Op( Instr[27:26] ),
 				.ALUControl( alu_control ) );
 
 // Next PC logic
+
 mux2x1 #(32) pcmux( pc_src, pc_plus4, result, pc_next );
-flopr #(32) pcreg( CLK, Reset, pc_next, pc );
+RegPC pcreg (.StallF(stallF), .CLK(), .PC(pc_next), .PCF();//analizar el CLK
+//flopr #(32) pcreg( CLK, Reset, pc_next, pc );
 adder #(32) pcadd1( CLK, pc, 32'd4, pc_plus4 );
-adder #(32) pcadd2( CLK, pc_plus4, 32'd4, pc_plus8 );
+//Diagrama la salida del adder pc_puls4 va directo a R15
+//adder #(32) pcadd2( CLK, pc_plus4, 32'd4, pc_plus8 );
 
 // Register file logic
 mux2x1 #(4) ra1mux( reg_src[0], Instr[19:16], 4'b1111, ra_1 );
@@ -108,5 +115,27 @@ alu_beta alu( CLK,
 			alu_control, 
 			alu_result, 
 			alu_flags );
-
+//Hazard Unit Logic
+hazard hazard_unit( .RegWriteM(),
+							.RegWriteW(), 
+							.MemToRegE(), 
+							.BranchTakenE(), 
+							.PCSrcD(), 
+							.PCSrcE(), 
+							.PCSrcM(), 
+							.PCSrcW(),
+							.RA1D(), 
+							.RA2D(), 
+							.RA1E(), 
+							.RA2E(), 
+							.WA3M(), 
+							.WA3W(), 
+							.WA3E(),
+							.StallF(stallF), 
+							.StallD(), 
+							.FlushD(), 
+							.FlushE(),
+							.FowardAE(), 
+							.FowardBE(),
+							.match()	);
 endmodule
