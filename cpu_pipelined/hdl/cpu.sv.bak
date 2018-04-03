@@ -43,9 +43,6 @@ logic [31:0] read_data;
 //Hazard Wires
 logic stallF, stallD, flushD, flushE;
 
-//RegFD wires
-logic instD;
-
 
 assign ReadData = read_data;
 assign MemWrite = mem_write;
@@ -62,7 +59,7 @@ assign ALUFlags = alu_flags;
 
 condlogic cl( .CLK( CLK ), 
 				 .Reset( Reset ), 
-				 .Cond( instD[31:28] ), 
+				 .Cond( Instr[31:28] ), 
 				 .ALUFlags( alu_flags ),
 				 .FlagW( flag_w ), 
 				 .PCS( pcs ), 
@@ -72,9 +69,9 @@ condlogic cl( .CLK( CLK ),
 				 .RegWrite( reg_write ), 
 				 .MemWrite( mem_write ) );
 
-decoder dec( .Op( instD[27:26] ), 
-				.Funct( instD[25:20] ), 
-				.Rd( instD[15:12] ),
+decoder dec( .Op( Instr[27:26] ), 
+				.Funct( Instr[25:20] ), 
+				.Rd( Instr[15:12] ),
 				.FlagW( flag_w ), 
 				.PCS( pcs ), 
 				.RegW( reg_w ), 
@@ -95,15 +92,15 @@ adder #(32) pcadd1( CLK, pc, 32'd4, pc_plus4 );
 //adder #(32) pcadd2( CLK, pc_plus4, 32'd4, pc_plus8 );
 
 // Register file logic
-mux2x1 #(4) ra1mux( reg_src[0], instD[19:16], 4'b1111, ra_1 );
-mux2x1 #(4) ra2mux( reg_src[1], instD[3:0], instD[15:12], ra_2 );
+mux2x1 #(4) ra1mux( reg_src[0], Instr[19:16], 4'b1111, ra_1 );
+mux2x1 #(4) ra2mux( reg_src[1], Instr[3:0], Instr[15:12], ra_2 );
 regfile rf( .CLK( CLK ),
 			.WE3( reg_write ),
 			.RA1( ra_1 ),
 			.RA2( ra_2 ),
-			.RA3( instD[15:12] ),
+			.RA3( Instr[15:12] ),
 			.WD3( result ),
-			.R15( pc_next ),//se conecta directamente la salida del pcmux segun diagrama
+			.R15( pc_plus8 ),
 			.RD1( src_a ),
 			.RD2( write_data )
 );
@@ -118,11 +115,6 @@ alu_beta alu( CLK,
 			alu_control, 
 			alu_result, 
 			alu_flags );
-			
-//RegFD Logic
-RegFD	reg_fd(.CLK(), .StallD(stallD), .CLR(), .InstrF(Instr), .InstrD(instD) );
-
-
 //Hazard Unit Logic
 hazard hazard_unit( .RegWriteM(),
 							.RegWriteW(), 
@@ -140,7 +132,7 @@ hazard hazard_unit( .RegWriteM(),
 							.WA3W(), 
 							.WA3E(),
 							.StallF(stallF), 
-							.StallD(stallD), 
+							.StallD(), 
 							.FlushD(), 
 							.FlushE(),
 							.FowardAE(), 
