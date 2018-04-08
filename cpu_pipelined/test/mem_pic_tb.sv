@@ -14,7 +14,6 @@ module mem_pic_tb;
 
 	// Instantiate the Device Under Test (DUT)
 	mem_pic #(SIZE) DUT (
-        .CLK( clk ),
 		.ADDRESS( addr ),
 		.READ( read )
     );

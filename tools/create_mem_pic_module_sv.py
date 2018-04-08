@@ -14,6 +14,8 @@ def tohex( val, nbits ):
 import sys
 import cv2
 
+print( "Starting..." )
+
 # Convert the picture given as mem_kernel.sv file
 image = len(sys.argv)
 if ( image > 1):
@@ -33,13 +35,14 @@ f.write( "`timescale 1ns / 1ps\n" )
 f.write( "module mem_pic #( parameter SIZE = 8 )\n" )
 f.write( "(\n" )
 # inputs and outputs of module
-f.write( "  input logic CLK,\n" )
+#f.write( "  input logic CLK,\n" )
 f.write( "  input logic [SIZE-1:0] ADDRESS,\n" )
 f.write( "  output logic [SIZE-1:0] READ\n" )
 f.write( ");\n" )
 
 # always block
-f.write( "always_ff@( posedge CLK ) begin\n" )
+#f.write( "always_ff@( posedge CLK ) begin\n" )
+f.write( "always_comb begin\n" )
 f.write( "  case( ADDRESS << 2 )\n" )
 
 # set data outputs, like a multiplexor
@@ -58,4 +61,5 @@ f.write( "end\n" )
 f.write( "\nendmodule\n" ) # endmodule
 f.close() # close file
 
+print( "Finish. OK." )
 # fisnish the program

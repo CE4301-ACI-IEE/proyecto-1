@@ -26,14 +26,13 @@ f.write( "`timescale 1ns / 1ps\n" )
 f.write( "module mem_kernel #( parameter SIZE = 16 )\n" )
 f.write( "(\n" )
 # inputs and outputs of module
-f.write( "  input logic CLK,\n" )
-f.write( "  input logic [SIZE-1:0] ADDRESS,\n" )
+f.write( "  input logic [5:0] ADDRESS,\n" )
 f.write( "  output logic [SIZE-1:0] READ\n" )
 f.write( ");\n" )
 
 # always block
-f.write( "always_ff@( posedge CLK ) begin\n" )
-f.write( "  case( ADDRESS[SIZE-1:2] )\n" )
+f.write( "always_comb begin\n" )
+f.write( "  case( ADDRESS[5:2] )\n" )
 
 # set data outputs, multiplexor
 d = kernel_matrix
@@ -41,7 +40,7 @@ aux_addr = 0
 for i in range( len(d) ):
     for j in range( len(d[i]) ):
         val = d[i][j]
-        f.write( "      16'd%d: READ " % aux_addr )
+        f.write( "      4'd%d: READ " % aux_addr )
         f.write( "<= 16'H%s;\n" % tohex(val,N_BITS) )
         aux_addr += 1
 

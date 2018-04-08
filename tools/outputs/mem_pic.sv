@@ -1,11 +1,10 @@
 `timescale 1ns / 1ps
 module mem_pic #( parameter SIZE = 8 )
 (
-  input logic CLK,
-  input logic [SIZE-1:0] ADDRESS,
+  input logic [31:0] ADDRESS,
   output logic [SIZE-1:0] READ
 );
-always_ff@( posedge CLK ) begin
+always_comb begin
   case( ADDRESS << 2 )
       32'H0: READ <= 8'Hb3;
       32'H1: READ <= 8'Hb6;
