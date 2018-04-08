@@ -3,20 +3,20 @@
 module RegDE #(
     parameter SIZE = 32
 )(
-    input logic CLK, PCSrcD, RegWriteD, MemToRegD, MemWriteD, 
+    input logic CLK, PCSrcD, RegWriteD, MemToRegD, MemToWriteD, 
     input logic BranchD, ALUSrcD, FlagWriteD, CLR,
     input logic [2:0] ALUControlD,
     input logic [3:0] Flags, CondD, WA3D,
     input logic [SIZE-1:0] RD1, RD2, ExtImmD,
 
-    output logic PCSrcE, RegWriteE, MemToRegE, MemWriteE, 
+    output logic PCSrcE, RegWriteE, MemToRegE, MemToWriteE, 
     output logic BranchE, ALUSrcE, FlagWriteE,
     output logic [2:0] ALUControlE,
     output logic [3:0] FlagsE, CondE, WA3E,
     output logic [SIZE-1:0] RE1, RE2, ExtImmE
 );
 
-logic CLK_tmp, PCSrcD_tmp, RegWriteD_tmp, MemToRegD_tmp, MemWriteD_tmp;
+logic CLK_tmp, PCSrcD_tmp, RegWriteD_tmp, MemToRegD_tmp, MemToWriteD_tmp;
 logic BranchD_tmp, ALUSrcD_tmp, FlagWriteD_tmp;
 logic [2:0] ALUControlD_tmp;
 logic [3:0] Flags_tmp, CondD_tmp, WA3D_tmp;
@@ -27,7 +27,7 @@ begin
     PCSrcD_tmp      = 1'b0;
     RegWriteD_tmp   = 1'b0;
     MemToRegD_tmp   = 1'b0;
-    MemWriteD_tmp   = 1'b0;
+    MemToWriteD_tmp = 1'b0;
     BranchD_tmp     = 1'b0;
     ALUSrcD_tmp     = 1'b0;;
     FlagWriteD_tmp  = 1'b0;
@@ -45,7 +45,7 @@ begin
     PCSrcD_tmp      = PCSrcD;
     RegWriteD_tmp   = RegWriteD;
     MemToRegD_tmp   = MemToRegD;
-    MemWriteD_tmp   = MemWriteD;
+    MemToWriteD_tmp = MemToWriteD;
     BranchD_tmp     = BranchD;
     ALUSrcD_tmp     = ALUSrcD;
     FlagWriteD_tmp  = FlagWriteD;
@@ -61,7 +61,7 @@ end
 assign PCSrcE       = PCSrcD_tmp;
 assign RegWriteE    = RegWriteD_tmp;
 assign MemToRegE    = MemToRegD_tmp;
-assign MemWriteE    = MemWriteD_tmp;
+assign MemToWriteE  = MemToWriteD_tmp;
 assign BranchE      = BranchD_tmp;
 assign ALUSrcE      = ALUSrcD_tmp;
 assign FlagWriteE   = FlagWriteD_tmp;

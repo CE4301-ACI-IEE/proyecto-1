@@ -4,31 +4,26 @@
 module condlogic (
 input logic CLK,
 input logic Reset,
-input logic [3:0] Cond,
+input logic [3:0] CondE,
 input logic [3:0] ALUFlags,
-input logic [1:0] FlagW,
-input logic PCS,
-input logic RegW,
-input logic MemW,
-output logic PCSrc,
-output logic RegWrite,
-output logic MemWrite
+input logic [1:0] FlagWriteE,
+input logic [1:0]	FlagsE,
+output logic [1:0] Flags,
+output logic CondExE,
 );
 
-logic [1:0] FlagWrite;
-logic [3:0] Flags;
-logic CondEx;
 
-flopenr #(2) flagreg1(CLK, Reset, FlagWrite[1],
-							  ALUFlags[3:2], Flags[3:2]);
-flopenr #(2) flagreg0(CLK, Reset, FlagWrite[0],
-							  ALUFlags[1:0], Flags[1:0]);
+logic [3:0] flags_temp;
+logic condexE_temp;
+
+flopenr #(2) flagreg1(CLK, Reset, FlagsE[1],
+							  ALUFlags[3:2], flags_temp[3:2]);
+flopenr #(2) flagreg0(CLK, Reset, FlagsE[0],
+							  ALUFlags[1:0], flags_temp[1:0]);
 
 // Write conditions
-condcheck cc( Cond, Flags, CondEx );
-assign FlagWrite = FlagW & {2{CondEx}};
-assign RegWrite = RegW & CondEx;
-assign MemWrite = MemW & CondEx;
-assign PCSrc = PCS & CondEx;
+condcheck cc( Cond, flags_temp, condexE_temp );
+assign CondExE = condexE_temp; 
+assign Flags = FlagWriteE & {2{condexE_temp}};
 
 endmodule

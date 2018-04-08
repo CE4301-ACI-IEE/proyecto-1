@@ -6,19 +6,18 @@ input logic [1:0] Op,
 input logic [5:0] Funct,
 input logic [3:0] Rd,
 output logic [1:0] FlagW,
-output logic PCSrcD,
-output logic RegWriteD,
-output logic MemWriteD,
-output logic MemtoRegD,
+output logic PCS,
+output logic RegW,
+output logic MemW,
+output logic MemtoReg,
 output logic ALUSrc,
 output logic [1:0] ImmSrc,
 output logic [1:0] RegSrc,
-output logic [2:0] ALUControl,
-output logic BranchD
+output logic [2:0] ALUControl
 );
 
 logic [9:0] controls;
-bit branch_temp;
+bit Branch;
 bit ALUOp;
 logic [2:0] ALUControl_temp;
 logic [1:0] FlagW_temp;
@@ -41,8 +40,8 @@ always@(*) begin
 	
 end
 
-assign {RegSrc, ImmSrc, ALUSrc, MemtoRegD,
-	RegWriteD, MemWriteD, branch_temp, ALUOp} = controls;
+assign {RegSrc, ImmSrc, ALUSrc, MemtoReg,
+	RegW, MemW, Branch, ALUOp} = controls;
 
 always@(*) begin
 
@@ -70,9 +69,8 @@ always@(*) begin
 	
 end
 
-assign PCSrcD = ((Rd==4'b1111) & RegWriteD) | branch_temp;
+assign PCS = ((Rd==4'b1111) & RegW) | Branch;
 assign ALUControl = ALUControl_temp;
 assign FlagW = FlagW_temp;
-assign BranchD = branch_temp;
 
 endmodule
