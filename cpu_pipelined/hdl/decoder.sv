@@ -5,7 +5,7 @@ module decoder (
 input logic [1:0] Op,
 input logic [5:0] Funct,
 input logic [3:0] Rd,
-output logic [1:0] FlagW,
+output logic [1:0] FlagWriteD,
 output logic PCSrcD,
 output logic RegWriteD,
 output logic MemWriteD,
@@ -72,7 +72,7 @@ end
 
 assign PCSrcD = ((Rd==4'b1111) & RegWriteD) | branch_temp;
 assign ALUControl = ALUControl_temp;
-assign FlagW = FlagW_temp;
+assign FlagWriteD = FlagW_temp;
 assign BranchD = branch_temp;
 
 endmodule

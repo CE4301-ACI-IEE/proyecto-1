@@ -9,7 +9,7 @@ input logic [3:0] ALUFlags,
 input logic [1:0] FlagWriteE,
 input logic [1:0]	FlagsE,
 output logic [1:0] Flags,
-output logic CondExE,
+output logic CondExE
 );
 
 

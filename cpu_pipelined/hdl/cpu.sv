@@ -19,7 +19,6 @@ module cpu (
 
 // Condlogic wires
 logic [3:0] alu_flags;
-logic [1:0] flag_w;
 logic cond_exE;
 logic [1:0]	flags;
 
@@ -31,6 +30,7 @@ logic branchD;
 logic pc_srcD;
 logic reg_writeD;
 logic mem_writeD;
+logic flag_writeD;
 
 // Next PC logic wires
 logic [31:0] pc;
@@ -47,7 +47,7 @@ logic [31:0] read_data;
 logic stallF, stallD, flushD, flushE;
 
 //RegFD wires
-logic instD;
+logic [31:0]instD;
 
 //RegDE wires
 logic pc_srcE;
@@ -57,6 +57,7 @@ logic flagsE;
 logic reg_writeE;	
 logic mem_writeE;
 logic mem_to_regE;
+logic flag_writeE;
 
 //RegEM wires
 
@@ -85,7 +86,7 @@ condlogic cl( .CLK( CLK ),
 				 .Reset( Reset ), 
 				 .CondE(condE), 
 				 .ALUFlags( alu_flags ),
-				 .FlagWriteE( flag_w ), 
+				 .FlagWriteE( flag_writeE ), 
 				 .FlagE(flagsE),  
 				 .Flags(flags),
 				 .CondExE(cond_exE) );
@@ -103,7 +104,7 @@ assign reg_writeE2 =  reg_writeE & cond_exE;
 decoder dec( .Op( instD[27:26] ), 
 				.Funct( instD[25:20] ), 
 				.Rd( instD[15:12] ),
-				.FlagW( flag_w ), 
+				.FlagWriteD( flag_writeD ), 
 				.PCSrcD( pc_srcD ), 
 				.RegWriteD( reg_writeD ), 
 				.MemWriteD( mem_writeD ),
@@ -117,7 +118,7 @@ decoder dec( .Op( instD[27:26] ),
 // Next PC logic
 
 mux2x1 #(32) pcmux( pc_src, pc_plus4, result, pc_next );		//cambiar por pc_srcW
-RegPC pcreg (.StallF(stallF), .CLK(), .PC(pc_next), .PCF();//analizar el CLK
+RegPC pcreg (.StallF(stallF), .CLK(), .PC(pc_next), .PCF() );//analizar el CLK
 //flopr #(32) pcreg( CLK, Reset, pc_next, pc );
 adder #(32) pcadd1( CLK, pc, 32'd4, pc_plus4 );
 //Diagrama la salida del adder pc_puls4 va directo a R15
@@ -153,17 +154,17 @@ RegFD	reg_fd(.CLK(), .StallD(stallD), .CLR(flushD), .InstrF(Instr), .InstrD(inst
 
 //RegDE Logic
 RegDE	reg_de(	.CLK(), .PCSrcD(pc_srcD), .RegWriteD(reg_writeD), .MemToRegD(mem_to_regD), .MemWriteD(mem_writeD),
-					.BranchD(branchD), .ALUSrcD(), .FlagWriteD(), .CLR(flushE), .ALUControlD(),
+					.BranchD(branchD), .ALUSrcD(), .FlagWriteD(flag_writeD), .CLR(flushE), .ALUControlD(),
 					.Flags(flags), .CondD(instD[31:28]), .WA3D(instD[15:12]), .RD1(), .RD2(), .ExtImmD(),
-					.PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE), .MemWriteE(mem_writeE)
-					.BranchE(branchE), .ALUSrcE(), .FlagWriteE(), .ALUControlE(), 
+					.PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE), .MemWriteE(mem_writeE),
+					.BranchE(branchE), .ALUSrcE(), .FlagWriteE(flag_writeE), .ALUControlE(), 
 					.FlagsE(flagsE), .CondE(condE), .WA3E(), .RE1(), .RE2(), .ExtImmE()	);
 					
 //RegEM Logic
 RegDE	reg_em(	.CLK(), .PCSrcD(pc_srcE2), .RegWriteD(reg_writeD), .MemToRegD(mem_to_regD), .MemWriteD(mem_writeD),
 					.BranchD(branchD), .ALUSrcD(), .FlagWriteD(), .CLR(), .ALUControlD(),
 					.Flags(flags), .CondD(instD[31:28]), .WA3D(), .RD1(), .RD2(), .ExtImmD(),
-					.PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE), .MemWriteE(mem_writeE)
+					.PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE), .MemWriteE(mem_writeE),
 					.BranchE(branchE), .ALUSrcE(), .FlagWriteE(), .ALUControlE(), 
 					.FlagsE(flagsE), .CondE(condE), .WA3E(), .RE1(), .RE2(), .ExtImmE()	);
 
