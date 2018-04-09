@@ -233,12 +233,12 @@ assign MemWrite = mem_writeD;
 assign PC = pc;
 assign AddrData = alu_result;
 assign WriteData = write_data;
-assign PCSrc = pc_src;			// cambiar por la salida del WB
+assign PCSrc = pc_srcW;			// cambiar por la salida del WB
 assign PCPlus4 = pc_plus4;
-assign RA1 = ra_1;
-assign RA2 = ra_2;
-assign RD1 = src_a;
-assign RD2 = src_b;
+assign RA1 = ra1_D;
+assign RA2 = ra2_D;
+assign RD1 = srcA_E;
+assign RD2 = srcB_E;
 assign ALUFlags = alu_flags;
 
 endmodule

@@ -13,7 +13,7 @@ module RegEM #(
 );
 
 logic PCSrcE2_tmp, RegWriteE2_tmp, MemToRegE_tmp, MemWriteE2_tmp;
-logic [3:0] WA3D_tmp;
+logic [3:0] WA3E_tmp;
 logic [SIZE-1:0] ALUResultE_temp, WriteDataE_temp;
 
 
