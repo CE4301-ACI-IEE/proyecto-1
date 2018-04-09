@@ -19,16 +19,16 @@ begin
     end 
 end
 
-always_ff@(posedge CLK)
+always@(negedge CLK)
 begin
     InstrD_tmp2 = InstrD_tmp;
 end
 
-always_ff@(negedge CLK)
+always@(posedge CLK)
 begin
-    InstrD_tmp = InstrF;
+    InstrD_tmp = InstrD;
 end
 
-assign InstrD = InstrD_tmp2;
+assign InstrF = InstrD_tmp2;
     
 endmodule

@@ -4,17 +4,17 @@
 module cpu (
 	input logic CLK,
 	input logic Reset,
-	input logic [31:0] Instr,
-	input logic [31:0] ReadData,
-	output logic MemWrite,
-	output logic [31:0] PC,
-	output logic [31:0] AddrData,
-	output logic [31:0] WriteData,
-	output logic PCSrc,
-	output logic [31:0] PCPlus4,
-	output logic [3:0] RA1, RA2,
-	output logic [31:0] RD1, RD2,
-	output logic [3:0] ALUFlags
+	input logic [47:0] Instr, //Instruccion desde el instruction rom
+	input logic [47:0] ReadDataM, //Dato desde las memorias
+	output logic MemWriteM, //Enable de la memoria datos
+	output logic [47:0] ALUOutM, //Adrres para memory controller
+	output logic [47:0] WriteDataM,
+	output logic [2:0] MemoryControl, //Controlar el memory controller 
+	output logic [47:0]PCF
+	//output logic [31:0] PCPlus4,	//for debug
+	//output logic [3:0] RA1, RA2, //for debug
+	//output logic [31:0] RD1, RD2, //for debug
+	//output logic [3:0] ALUFlags //for debug
 );
 
 // Condlogic wires
@@ -36,11 +36,9 @@ logic [3:0] alu_flags;
 logic [31:0] alu_resultE;
 
 //Next PC logic wires
-logic [31:0] pc_temp;
-logic [31:0] pcF;
-logic [31:0] pc_next, pc_plus4, pc_plus8;
-
-
+logic [47:0] pc_temp;
+logic [47:0] pcF;
+logic [47:0] pc_next, pc_plus4;
 
 //Extend Unit Wires
 logic [31:0] ext_immD;
@@ -51,7 +49,7 @@ logic [31:0] rd2_D;
 logic [31:0] write_data;
 logic [31:0] alu_result;
 logic [31:0] read_data;
-logic [3:0] ra1_D, ra2_D;
+logic [4:0] ra1_D, ra2_D;
 
 //Hazard Wires
 logic stallF, stallD, flushD, flushE;
@@ -75,6 +73,7 @@ logic [3:0] wa3E;
 logic [31:0] rd1_E;
 logic [31:0] rd2_E;
 logic [31:0] ext_immE;
+logic [4:0]	ra1E, ra2E;
 
 //RegEM wires
 logic pc_srcM;
@@ -138,16 +137,16 @@ decoder dec( .Op( instD[27:26] ),
 
 // Next PC logic
 
-mux2x1 #(32) pc_mux1( pc_srcW, pc_plus4, resultW, pc_temp );
-mux2x1 #(32) pc_mux2( .s(BranchTakenE), .d0(pc_temp), .d1(alu_resultE), .y(pc_next) );	
+mux2x1 #(48) pc_mux1( pc_srcW, pc_plus4, resultW, pc_temp );
+mux2x1 #(48) pc_mux2( .s(BranchTakenE), .d0(pc_temp), .d1(alu_resultE), .y(pc_next) );	
 RegPC pcreg (.StallF(stallF), .CLK(), .PC(pc_next), .PCF(pcF) );//analizar el CLK
 //flopr #(32) pcreg( CLK, Reset, pc_next, pc );
-adder #(32) pcadd1( CLK, pc, 32'd4, pc_plus4 );
+adder #(48) pcadd1( CLK, pcF, 48'd4, pc_plus4 );
 //Diagrama la salida del adder pc_puls4 va directo a R15
 //adder #(32) pcadd2( CLK, pc_plus4, 32'd4, pc_plus8 );
 
 //Register file logic
-mux2x1 #(4) ra1mux( reg_src[0], instD[19:16], 4'b1111, ra1_D );
+mux2x1 #(4) ra1mux( reg_src[0], instD[19:16], 5'b11111, ra1_D );
 mux2x1 #(4) ra2mux( reg_src[1], instD[3:0], instD[15:12], ra2_D );
 regfile rf( .CLK( CLK ),
 			.WE3( reg_writeW ), 
@@ -155,7 +154,7 @@ regfile rf( .CLK( CLK ),
 			.RA2( ra2_D ),
 			.RA3( wa3W ),
 			.WD3( resultW ),
-			.R15( pc_next ),//se conecta directamente la salida del pcmux segun diagrama
+			.R31( pc_next ),//se conecta directamente la salida del pcmux segun diagrama
 			.RD1( rd1_D ),
 			.RD2( rd2_D )
 );
@@ -174,7 +173,7 @@ mux2x1 #(32) srcBmux( alu_srcE, writedata_E, ext_immE, srcB_E );
 alu_beta alu( CLK, 
 			srcA_E, 
 			srcB_E, 
-			alu_control, 
+			alu_controlE, 
 			alu_resultE, 
 			alu_flags
 );
@@ -186,9 +185,10 @@ RegFD	reg_fd(.CLK(), .StallD(stallD), .CLR(flushD), .InstrF(Instr), .InstrD(inst
 RegDE	reg_de(	.CLK(), .PCSrcD(pc_srcD), .RegWriteD(reg_writeD), .MemToRegD(mem_to_regD), .MemWriteD(mem_writeD),
 					.BranchD(branchD), .ALUSrcD(alu_srcD), .FlagWriteD(flag_writeD), .CLR(flushE), .ALUControlD(alu_controlD),
 					.Flags(flags), .CondD(instD[31:28]), .WA3D(instD[15:12]), .RD1(rd1_D), .RD2(rd2_D), .ExtImmD(ext_immD),
-					.PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE), .MemWriteE(mem_writeE),
-					.BranchE(branchE), .ALUSrcE(alu_srcE), .FlagWriteE(flag_writeE), .ALUControlE(alu_controlE), 
-					.FlagsE(flagsE), .CondE(condE), .WA3E(wa3E), .RE1(rd1_E), .RE2(rd2_E), .ExtImmE(ext_immE)	);
+					.RA1D(ra1_D), .RA2D(ra2_D), .PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE),
+					.MemWriteE(mem_writeE), .BranchE(branchE), .ALUSrcE(alu_srcE), .FlagWriteE(flag_writeE),
+					.ALUControlE(alu_controlE), .FlagsE(flagsE), .CondE(condE), .WA3E(wa3E), .RE1(rd1_E), 
+					.RE2(rd2_E), .ExtImmE(ext_immE), .RA1E(ra1E), .RA2E(ra2E)	);
 					
 //RegEM Logic
 RegEM	reg_em(	.CLK(), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .MemToRegE(mem_to_regE), .MemWriteE2(mem_writeE2),
@@ -198,7 +198,7 @@ RegEM	reg_em(	.CLK(), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .MemToRegE(m
 
 //RegMW Logic
 RegMW	reg_mw(	.CLK(), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM),
-					.WA3M(wa3M), .ALUOutM(alu_outM), .ReadDataM(),	
+					.WA3M(wa3M), .ALUOutM(alu_outM), .ReadDataM(ReadDataM),	
 					.PCSrcW(pc_srcW), .RegWriteW(reg_writeW), .MemToRegW(mem_to_regW),
 					.WA3W(wa3W), .ALUOutW(alu_outW), .ReadDataW(read_data_W) );
 
@@ -213,8 +213,8 @@ hazard hazard_unit( .RegWriteM(reg_writeM),
 							.PCSrcW(pc_srcW),
 							.RA1D(ra1_D), 
 							.RA2D(ra2_D), 
-							.RA1E(), 
-							.RA2E(), 
+							.RA1E(ra1E), 
+							.RA2E(ra2E), 
 							.WA3M(wa3M), 
 							.WA3W(wa3W), 
 							.WA3E(wa3E),
@@ -228,17 +228,17 @@ hazard hazard_unit( .RegWriteM(reg_writeM),
 							
 //Salidas CPU
 							
-assign ReadData = read_data;
-assign MemWrite = mem_writeD;
-assign PC = pc;
-assign AddrData = alu_result;
-assign WriteData = write_data;
-assign PCSrc = pc_srcW;			// cambiar por la salida del WB
-assign PCPlus4 = pc_plus4;
-assign RA1 = ra1_D;
-assign RA2 = ra2_D;
-assign RD1 = srcA_E;
-assign RD2 = srcB_E;
-assign ALUFlags = alu_flags;
+//assign ReadData = read_data;
+assign MemWriteM = mem_writeM;
+//assign PC = pc;
+assign ALUOutM = alu_outM;
+assign WriteDataM = writedata_M;
+assign PCF = pcF; 
+//assign PCPlus4 = pc_plus4;
+//assign RA1 = ra1_D;
+//assign RA2 = ra2_D;
+//assign RD1 = srcA_E;
+//assign RD2 = srcB_E;
+//assign ALUFlags = alu_flags;
 
 endmodule

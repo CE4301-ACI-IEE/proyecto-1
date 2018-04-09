@@ -1,19 +1,21 @@
 `timescale 1ns / 1ps
 
 module RegDE #(
-    parameter SIZE = 32
+    parameter SIZE = 48
 )(
     input logic CLK, PCSrcD, RegWriteD, MemToRegD, MemWriteD, 
     input logic BranchD, ALUSrcD, FlagWriteD, CLR,
     input logic [2:0] ALUControlD,
     input logic [3:0] Flags, CondD, WA3D,
     input logic [SIZE-1:0] RD1, RD2, ExtImmD,
+	 input logic [4:0] RA1D, RA2D,
 
     output logic PCSrcE, RegWriteE, MemToRegE, MemWriteE, 
     output logic BranchE, ALUSrcE, FlagWriteE,
     output logic [2:0] ALUControlE,
     output logic [3:0] FlagsE, CondE, WA3E,
-    output logic [SIZE-1:0] RE1, RE2, ExtImmE
+    output logic [SIZE-1:0] RE1, RE2, ExtImmE,
+	 output logic [4:0] RA1E, RA2E
 );
 
 logic CLK_tmp, PCSrcD_tmp, RegWriteD_tmp, MemToRegD_tmp, MemWriteD_tmp;
@@ -21,6 +23,7 @@ logic BranchD_tmp, ALUSrcD_tmp, FlagWriteD_tmp;
 logic [2:0] ALUControlD_tmp;
 logic [3:0] Flags_tmp, CondD_tmp, WA3D_tmp;
 logic [SIZE-1:0] RD1_tmp, RD2_tmp, ExtImmD_tmp;
+logic [4:0] RA1D_temp, RA2D_temp;
 
 always@(CLR)
 begin
@@ -29,7 +32,7 @@ begin
     MemToRegD_tmp   = 1'b0;
     MemWriteD_tmp   = 1'b0;
     BranchD_tmp     = 1'b0;
-    ALUSrcD_tmp     = 1'b0;;
+    ALUSrcD_tmp     = 1'b0;
     FlagWriteD_tmp  = 1'b0;
     ALUControlD_tmp = 3'b0;
     Flags_tmp       = 4'b0;
@@ -38,9 +41,11 @@ begin
     RD1_tmp         = {SIZE{1'b0}};
     RD2_tmp         = {SIZE{1'b0}};
     ExtImmD_tmp     = {SIZE{1'b0}};
+	 RA1D_temp		  = 5'b00000;
+	 RA2D_temp		  = 5'b00000;
 end
 
-always@(posedge CLK)//se debe cambiar por negedge
+always@(negedge CLK)//se debe cambiar por negedge
 begin
     PCSrcD_tmp      = PCSrcD;
     RegWriteD_tmp   = RegWriteD;
@@ -56,6 +61,8 @@ begin
     RD1_tmp         = RD1;
     RD2_tmp         = RD2;
     ExtImmD_tmp     = ExtImmD;
+	 RA1D_temp		  = RA1D;
+	 RA2D_temp		  = RA2D;
 end
 
 assign PCSrcE       = PCSrcD_tmp;
@@ -72,4 +79,7 @@ assign WA3E         = WA3D_tmp;
 assign RE1          = RD1_tmp;
 assign RE2          = RD2_tmp;
 assign ExtImmE      = ExtImmD_tmp;
+assign RA1E			  = RA1D_temp;
+assign RA2E         = RA2D_temp;
+
 endmodule

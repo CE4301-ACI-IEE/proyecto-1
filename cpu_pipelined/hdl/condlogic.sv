@@ -22,7 +22,7 @@ flopenr #(2) flagreg0(CLK, Reset, FlagsE[0],
 							  ALUFlags[1:0], flags_temp[1:0]);
 
 // Write conditions
-condcheck cc( Cond, flags_temp, condexE_temp );
+condcheck cc( CondE, flags_temp, condexE_temp );
 assign CondExE = condexE_temp; 
 assign Flags = FlagWriteE & {2{condexE_temp}};
 
