@@ -40,7 +40,7 @@ begin
     ExtImmD_tmp     = {SIZE{1'b0}};
 end
 
-always@(posedge CLK)
+always@(posedge CLK)//se debe cambiar por negedge
 begin
     PCSrcD_tmp      = PCSrcD;
     RegWriteD_tmp   = RegWriteD;

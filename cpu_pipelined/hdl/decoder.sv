@@ -10,10 +10,10 @@ output logic PCSrcD,
 output logic RegWriteD,
 output logic MemWriteD,
 output logic MemtoRegD,
-output logic ALUSrc,
-output logic [1:0] ImmSrc,
+output logic ALUSrcD,
+output logic [1:0] ImmSrcD,
 output logic [1:0] RegSrc,
-output logic [2:0] ALUControl,
+output logic [2:0] ALUControlD,
 output logic BranchD
 );
 
@@ -41,7 +41,7 @@ always@(*) begin
 	
 end
 
-assign {RegSrc, ImmSrc, ALUSrc, MemtoRegD,
+assign {RegSrc, ImmSrcD, ALUSrcD, MemtoRegD,
 	RegWriteD, MemWriteD, branch_temp, ALUOp} = controls;
 
 always@(*) begin
@@ -71,7 +71,7 @@ always@(*) begin
 end
 
 assign PCSrcD = ((Rd==4'b1111) & RegWriteD) | branch_temp;
-assign ALUControl = ALUControl_temp;
+assign ALUControlD = ALUControl_temp;
 assign FlagWriteD = FlagW_temp;
 assign BranchD = branch_temp;
 
