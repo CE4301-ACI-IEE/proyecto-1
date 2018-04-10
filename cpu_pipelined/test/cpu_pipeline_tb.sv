@@ -3,7 +3,7 @@
 // CPU module testbench
 module cpu_pipeline_tb;
 
-    parameter SIZE = 48;
+    parameter SIZE = 32;
 
 	// Inputs
 	logic clk;
@@ -18,11 +18,11 @@ module cpu_pipeline_tb;
     logic [SIZE-1:0] write_data;
 
     // Debug outputs
-    logic pc_src;
-    logic [31:0] pc_plus4;
-    logic [3:0] ra_1, ra_2;
-    logic [31:0] rd_1, rd_2;
-    logic [3:0] alu_flags;
+    //logic pc_src;
+    //logic [31:0] pc_plus4;
+    //logic [3:0] ra_1, ra_2;
+    //logic [31:0] rd_1, rd_2;
+    //logic [3:0] alu_flags;
 	
 	// Instantiate the Device Under Test (DUT)
 	cpu DUT(

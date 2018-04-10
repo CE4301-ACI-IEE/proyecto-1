@@ -7,28 +7,19 @@ module RegFD #(
     input logic [SIZE-1:0] InstrF,
     output logic [SIZE-1:0] InstrD
 );
-logic [SIZE-1:0] InstrD_tmp,InstrD_tmp2;
-always@(*)
-begin
-    if (StallD)
-    begin
-        InstrD_tmp = {SIZE{1'bx}};
-    end else if (CLR)
-    begin
-        InstrD_tmp = {SIZE{1'b0}};
-    end 
-end
 
-always_ff@(posedge CLK)
-begin
-    InstrD_tmp2 = InstrD_tmp;
-end
+logic [SIZE-1:0] InstrD_temp;
 
 always_ff@(negedge CLK)
 begin
-    InstrD_tmp = InstrF;
+	if(StallD == 1'b0)
+		InstrD_temp = InstrF;
+	else if(StallD)
+		InstrD_temp = InstrD_temp;
+	else if(CLR)
+		InstrD_temp = {SIZE{1'b0}};
 end
 
-assign InstrD = InstrD_tmp2;
-    
+assign InstrD = InstrD_temp;
+
 endmodule

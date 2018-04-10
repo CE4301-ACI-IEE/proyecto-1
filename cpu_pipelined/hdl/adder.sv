@@ -3,13 +3,12 @@
 module adder #(
     parameter SIZE = 32
 )(
-    input logic CLK,
     input logic [SIZE-1:0] a,
     input logic [SIZE-1:0] b,
     output logic [SIZE-1:0] c
 );
     logic [SIZE-1:0] tmp;
-    always@( * )
+    always_comb
     begin
         tmp <= a+b;
     end
