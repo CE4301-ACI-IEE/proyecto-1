@@ -13,6 +13,7 @@ def tohex( val, nbits ):
 # read arguments
 import sys
 import cv2
+import os
 
 print( "Starting..." )
 
@@ -28,38 +29,43 @@ else:
     sys.exit("Error loading image.")
 
 # create mem_kernel.sv file
-f = open( "outputs/mem_pic.sv", "w+" )
+this_file_dir = os.path.dirname(os.path.realpath('__file__'))   # Direction of this file
+output_file_dir = "../cpu_pipelined/hdl/mem_pic.sv"             # Direction of output file
+path = os.path.join( this_file_dir, output_file_dir )           # Create a relative path
+f = open( path, "w+" )
 
 # initilize module
 f.write( "`timescale 1ns / 1ps\n" )
-f.write( "module mem_pic #( parameter SIZE = 8 )\n" )
-f.write( "(\n" )
+f.write( "module mem_pic #( parameter SIZE = 8 )\n(\n\t" )
 # inputs and outputs of module
-#f.write( "  input logic CLK,\n" )
-f.write( "  input logic [SIZE-1:0] ADDRESS,\n" )
-f.write( "  output logic [SIZE-1:0] READ\n" )
-f.write( ");\n" )
+f.write( "input logic CLK,\n\t" )
+f.write( "input logic [31:0] ADDRESS,\n\t" )
+f.write( "output logic [SIZE-1:0] READ\n" )
+f.write( ");\n\n" )
 
 # always block
-#f.write( "always_ff@( posedge CLK ) begin\n" )
-f.write( "always_comb begin\n" )
-f.write( "  case( ADDRESS << 2 )\n" )
+f.write( "always_ff@( posedge CLK ) begin\n\t" )
+f.write( "case( ADDRESS )\n\t\t" )
 
 # set data outputs, like a multiplexor
 d = image
 aux_addr = 0
 for i in range( d.shape[0] ):
+    f.write( "\n\t\t")
     for j in range( d.shape[1] ):
         val = d[i][j]
-        f.write( "      32'H%d: READ " % aux_addr )
-        f.write( "<= 8'H%s;\n" % tohex( val, N_BITS ) )
+        f.write( "32'H")
+        f.write( tohex( i, 16 ).zfill(4) )
+        f.write( tohex( j, 16 ).zfill(4) )
+        f.write( ": READ <= 8'H%s;\n\t\t" % tohex( val, N_BITS ) )
         aux_addr += 1
 
-f.write( "      default: READ <= 8'bx;\n" )
-f.write( "  endcase\n" )
+f.write( "default: READ <= 8'b0;\n\t" )
+f.write( "endcase\n\t" )
 f.write( "end\n" )
 f.write( "\nendmodule\n" ) # endmodule
 f.close() # close file
 
 print( "Finish. OK." )
+print( "See 'cpu_pipelined/hdl/mem_pic.sv'." )
 # fisnish the program

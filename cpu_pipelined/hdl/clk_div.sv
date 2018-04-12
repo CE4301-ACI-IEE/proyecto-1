@@ -19,6 +19,6 @@ always_ff@( posedge MASTER_CLK ) begin
 end
 
 assign CLK_CPU = ( _count[1:0] == 2'b11 );
-assign CLK_MEM = ( _count[0] == 1'b1 );
+assign CLK_MEM = ( 1'b1 );
 
 endmodule

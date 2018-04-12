@@ -7,7 +7,7 @@ module mem_pic_tb;
 
 	// Inputs
 	logic clk;
-    logic [SIZE-1:0] addr;
+    logic [32-1:0] addr;
 
 	//Outputs
 	logic [SIZE-1:0] read;
@@ -31,16 +31,16 @@ module mem_pic_tb;
 	
 	initial begin
 		// Initialize Inputs
-		addr = 8'bx;
+		addr = 32'bx;
 		
 		// Wait 20 ns for global reset to finish
 		#20;
 		
-		addr = 8'H0;
+		addr = 32'H0;
 		// Add stimulus here
 		for( int i=0; i<9; i++ ) begin
 			#20;
-			addr = addr + 8'H4;
+			addr = addr + 32'H4;
 		end
 
 	end

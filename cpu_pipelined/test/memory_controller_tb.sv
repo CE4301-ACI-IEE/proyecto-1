@@ -3,34 +3,42 @@
 // Memory controller module testbench
 module memory_controller_tb;
 
+    // Parameters
+    parameter SIZE_ADDR = 32;
+    parameter SIZE_READ = 16;
     parameter SIZE = 48;
 
 	// Inputs
-    logic clk_cpu;
 	logic clk;
     logic clk_mem;
-    logic [SIZE-1:0] address;
     logic enable;
-    logic ctrl;
+    logic [1:0] ctrl;
+    logic [31:0] alu_address; // Or 48 bits, whatever
+    logic [SIZE_READ-1:0] read_mem;
 
 	//Outputs
-    logic [SIZE-1:0] read;
-    logic [1:0] state;
+    logic [SIZE_ADDR-1:0] address_mem;
+    logic handshake;
+    logic [SIZE-1:0] read_data;
+    logic [SIZE-1:0] _state_;
 	
 	// Instantiate the Device Under Test (DUT)
-	memory_controller DUT(
+	memory_controller DUT (
         .CLK( clk ),
         .CLK_MEM( clk_mem ),
-        .ADDRESS( address ),
         .ENABLE( enable ),
-        .CTRL( ctrl ),
-        .READ( read ),
-        .state( state )
+        .Ctrl( ctrl ),
+        .ADDRESS( alu_address ),
+        .ReadMem( read_mem ),
+        .AddressMem( address_mem ),
+        .HANDSHAKE( handshake ),
+        .READ( read_data ),
+        ._state_( _state_ ) // For debugging
     );
 
 	//Initialize clock
 	initial begin
-		clk = 1'b0;
+		clk = 1'b1;
 			forever begin
 			#5;
 			clk = ~clk;
@@ -43,11 +51,15 @@ module memory_controller_tb;
         .RESET( reset ),
         .MASTER_CLK( clk ),
         .CLK_MEM( clk_mem ),
-        .CLK_CPU( clk_cpu )
+        .CLK_CPU(  )
+    );
+    mem_kernel mk(
+        .CLK( clk ),
+		.ADDRESS( address_mem ),
+		.READ( read_mem )
     );
 	initial begin
 		// Initialize Inputs
-		address = 48'bx;
         enable = 1'b0;
         ctrl = 2'bxx;
         reset = 1'b1;
@@ -58,9 +70,24 @@ module memory_controller_tb;
 		// Add stimulus here
         reset = 1'b0;
         enable = 1'b0;
+        
         #20;
         enable = 1'b1;
+        ctrl = 2'b10;
+        alu_address = 32'H00010002;
+        
+        #60;
+        enable = 1'b0;
+        alu_address = 32'H00020002;
+        ctrl = 2'b00;
 
+        #40;
+        enable = 1'b1;
+        alu_address = 32'H00020001;
+        ctrl = 2'b11;
+
+        #100;
+        $stop;
 
 	end
 	
