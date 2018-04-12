@@ -13,7 +13,7 @@ module cpu_pipeline_tb;
 
 	// Outputs
     logic mem_write;
-    logic [SIZE-1:0] pc;
+    logic [SIZE-1:0] pc,instrD;
     logic [SIZE-1:0] addr_data;
     logic [SIZE-1:0] write_data;
 
@@ -34,7 +34,8 @@ module cpu_pipeline_tb;
         .PCF( pc ),
         .ALUOutM( addr_data ),
         .WriteDataM( write_data ),
-        .MemoryControl()
+        .MemoryControl(),
+        .iD(instrD)
         // Test wires
         //.PCSrc( pc_src ),
         //.PCPlus4( pc_plus4 ),
@@ -80,7 +81,7 @@ module cpu_pipeline_tb;
         reset = 1'b0;
         #60;
 
-        $stop;
+        //$stop;
 
 	end
 	

@@ -8,7 +8,7 @@ module instruction_rom #( parameter SIZE = 32 )
  );
 
 always@( posedge CLK ) begin
-	if( Reset ) Instr <= 32'HE04F000F;
+	if( Reset ) Instr <= 32'bx;
 	else begin
 		case( Address / 32'd4 )
 			32'd0: Instr  <= 32'HE04F000F;

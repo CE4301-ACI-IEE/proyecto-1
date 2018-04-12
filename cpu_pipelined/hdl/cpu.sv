@@ -10,7 +10,8 @@ module cpu (
 	output logic [31:0] ALUOutM, //Adrres para memory controller
 	output logic [31:0] WriteDataM,
 	output logic [2:0] MemoryControl, //Controlar el memory controller 
-	output logic [31:0]PCF
+	output logic [31:0]PCF,
+	output logic [31:0]iD 
 	//output logic [31:0] PCPlus4,	//for debug
 	//output logic [3:0] RA1, RA2, //for debug
 	//output logic [31:0] RD1, RD2, //for debug
@@ -161,7 +162,7 @@ regfile rf( .CLK( CLK ),
 //MUx2x1 Salida de estapa de WriteBack
 mux2x1 #(32) resmux( mem_to_regW, alu_outW, read_data_W, resultW );
 //Extend Logic
-extend ext( Instr[23:0], imm_srcD, ext_immD );
+extend ext( instD[23:0], imm_srcD, ext_immD );
 
 // ALU logic
 
@@ -234,6 +235,7 @@ assign MemWriteM = mem_writeM;
 assign ALUOutM = alu_outM;
 assign WriteDataM = writedata_M;
 assign PCF = pcF; 
+assign iD = instD;
 //assign PCPlus4 = pc_plus4;
 //assign RA1 = ra1_D;
 //assign RA2 = ra2_D;

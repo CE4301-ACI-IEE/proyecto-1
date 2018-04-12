@@ -50,22 +50,22 @@ end
 
 always@(negedge CLK)//se debe cambiar por negedge
 begin
-    PCSrcD_tmp      = PCSrcD;
-    RegWriteD_tmp   = RegWriteD;
-    MemToRegD_tmp   = MemToRegD;
-    MemWriteD_tmp   = MemWriteD;
-    BranchD_tmp     = BranchD;
-    ALUSrcD_tmp     = ALUSrcD;
-    FlagWriteD_tmp  = FlagWriteD;
-    ALUControlD_tmp = ALUControlD;
-    Flags_tmp       = Flags;
-    CondD_tmp       = CondD;
-    WA3D_tmp        = WA3D;
-    RD1_tmp         = RD1;
-    RD2_tmp         = RD2;
-    ExtImmD_tmp     = ExtImmD;
-	 RA1D_temp		  = RA1D;
-	 RA2D_temp		  = RA2D;
+    PCSrcD_tmp      <= PCSrcD;
+    RegWriteD_tmp   <= RegWriteD;
+    MemToRegD_tmp   <= MemToRegD;
+    MemWriteD_tmp   <= MemWriteD;
+    BranchD_tmp     <= BranchD;
+    ALUSrcD_tmp     <= ALUSrcD;
+    FlagWriteD_tmp  <= FlagWriteD;
+    ALUControlD_tmp <= ALUControlD;
+    Flags_tmp       <= Flags;
+    CondD_tmp       <= CondD;
+    WA3D_tmp        <= WA3D;
+    RD1_tmp         <= RD1;
+    RD2_tmp         <= RD2;
+    ExtImmD_tmp     <= ExtImmD;
+	RA1D_temp		<= RA1D;
+	RA2D_temp		<= RA2D;
 end
 
 assign PCSrcE       = PCSrcD_tmp;
@@ -82,7 +82,7 @@ assign WA3E         = WA3D_tmp;
 assign RE1          = RD1_tmp;
 assign RE2          = RD2_tmp;
 assign ExtImmE      = ExtImmD_tmp;
-assign RA1E			  = RA1D_temp;
+assign RA1E			= RA1D_temp;
 assign RA2E         = RA2D_temp;
 
 endmodule

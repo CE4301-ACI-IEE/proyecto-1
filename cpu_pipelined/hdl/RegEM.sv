@@ -17,7 +17,7 @@ logic [3:0] WA3E_tmp;
 logic [SIZE-1:0] ALUResultE_temp, WriteDataE_temp;
 
 
-always@(posedge CLK)//se debe cambiar por negedge
+always@(negedge CLK)//se debe cambiar por negedge
 begin
     PCSrcE2_tmp      = PCSrcE2;
     RegWriteE2_tmp   = RegWriteE2;
