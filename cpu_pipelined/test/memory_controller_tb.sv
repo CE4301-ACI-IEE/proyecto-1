@@ -59,6 +59,7 @@ module memory_controller_tb;
 		.READ( read_mem )
     );
 	initial begin
+        $display("MEMORY CONTROLLER TESTBENCH");
 		// Initialize Inputs
         enable = 1'b0;
         ctrl = 2'bxx;
@@ -77,6 +78,13 @@ module memory_controller_tb;
         alu_address = 32'H00010002;
         
         #60;
+        $display("SINGULAR VALUE IN DIR: 32'H00010002");
+        if( read_data == 48'Hffffffffffff )
+            $display("SINGULAR VALUE: OK! (expected value:48'Hffffffffffff)");
+        else
+            $display("SINGULAR VALUE: FAILED...");
+        #20;
+
         enable = 1'b0;
         alu_address = 32'H00020002;
         ctrl = 2'b00;
@@ -87,6 +95,12 @@ module memory_controller_tb;
         ctrl = 2'b11;
 
         #100;
+        $display("MULTIPLE VALUES IN DIR: 32'H00020001, VERTICAL");
+        if( read_data == 48'H00000000ffff )
+            $display("MULTIPLE VALUES: OK! (expected value:48'H00000000ffff)");
+        else
+            $display("MULTIPLE VALUES: FAILED...");
+       
         $stop;
 
 	end

@@ -17,7 +17,7 @@ module memory_controller
     input logic [1:0] Ctrl,
     input logic [31:0] ADDRESS,
     input logic [15:0] ReadMem,
-    output logic [15:0] AddressMem,
+    output logic [31:0] AddressMem,
     output logic HANDSHAKE,
     output logic [47:0] READ,
     output logic [47:0] _state_ // For debug only
@@ -85,6 +85,7 @@ always_ff@( posedge CLK ) begin
                 _state_ <= SS;
                 READ <= 48'bx;
                 AddressMem <= 16'bx;
+                HANDSHAKE <= 1'b0;
             end
 
             S0: begin
@@ -105,6 +106,7 @@ always_ff@( posedge CLK ) begin
                 _state_ <= S3;
                 READ <= { {32{ReadMem[15]}}, ReadMem[15:0] };
                 val_tmp <= val_tmp + 1'b1; // Possible wait flag
+                HANDSHAKE <= 1'b1;
             end
 
             S11: begin
