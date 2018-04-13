@@ -10,21 +10,13 @@ module RegPC #(
 
 logic [SIZE-1:0] PCF_tmp;
 
-always@(RESET)
+always@( negedge CLK )
 begin
-    PCF_tmp <= {SIZE{1'bx}};
-end
-
-always@(~RESET)
-begin
-    PCF_tmp <= {SIZE{1'b0}};
-end
-
-always@(negedge CLK & ~RESET)
-begin
-     if (StallF == 1'b0)
+		if( RESET ) PCF_tmp <= {SIZE{1'bx}};
+		else PCF_tmp <= {SIZE{1'b0}};
+     if ( ~StallF )
         PCF_tmp <= PC;
-    else if ((StallF == 1'b1))
+    else if ( StallF == 1'b1 )
         PCF_tmp <= PCF_tmp;
     else
         PCF_tmp <= PC;

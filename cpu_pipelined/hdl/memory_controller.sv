@@ -2,9 +2,6 @@
 
 // Memory controller module
 
-// input logic [31:0] ADDRESS its divide in two buses:
-    // logic [15:0] DIR_J;
-    // logic [31:16] DIR_I;
 // input logic [1:0] Ctrl meaning:
     // if Ctrl[0] == 0 : is expected a singular value of the matrix
         // Ctrl[1] don't care
