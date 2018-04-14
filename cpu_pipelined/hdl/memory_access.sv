@@ -11,7 +11,8 @@ module memory_access
     input logic ENABLE,
     input logic [2:0] CTRL,
     input logic [47:0] ADDRESS,
-    output logic [47:0] READ
+    output logic [47:0] READ,
+    output logic HANDSHAKE
 );
 
 // Logics mem_kernel
@@ -84,15 +85,22 @@ assign m_p_ctrl[1] = CTRL[2];
 assign m_k_ADDRESS = ADDRESS[31:0];
 assign m_p_ADDRESS = ADDRESS[31:0];
 
-parameter   STATE_MAX = 10;
+assign READ = ( ~CTRL[0] ) ? m_k_READ : m_p_READ ;
+assign HANDSHAKE = ( ~CTRL[0] ) ? m_k_handshake : m_p_handshake ;
+
+parameter   STATE_MAX = 12;
 parameter   S_IDLE = 0,
             S_START = 1,
             S_ENABLE_K = 2,
             S_ENABLE_P = 3,
             S_READ_K = 4,
             S_READ_P = 5,
-            S_DLY_1 = 6,
-            S_DONE = 7;
+            S_START_K = 6,
+            S_START_P = 7,
+            S_DLY_1 = 8,
+            S_DONE = 9,
+            S_NOT_ENABLE_K = 10,
+            S_NOT_ENABLE_P = 11;
 ;
 
 logic [STATE_MAX:0] _state, _next_state;
@@ -116,29 +124,43 @@ always_ff@( _state or ENABLE or CTRL[0] or m_k_handshake or m_p_handshake) begin
         end
 
         _state[S_START] : begin
-            if( ~CTRL[0] ) begin
+            if( ~CTRL[0] ) begin // States      
+                                _next_state[ S_START_K ]    <= 1'b1;
+                                // Tasks
                                 _next_state[ S_ENABLE_K ]   <= 1'b1;
-                                _next_state[ S_READ_K ]     <= 1'b1;
-            end
-            else begin
+            end                 
+            else begin          // States
+                                _next_state[ S_START_P ]    <= 1'b1;
+                                // Tasks
                                 _next_state[ S_ENABLE_P ]   <= 1'b1;
-                                _next_state[ S_READ_P ]     <= 1'b1;
             end
-                                _next_state[ S_DLY_1 ]      <= 1'b1;
+        end
+        
+        _state[S_START_K] : begin
+                                 // States      
+            if( m_k_handshake ) _next_state[ S_DLY_1 ]      <= 1'b1;
+            else                _next_state[ S_START_K ]    <= 1'b1;
+                                
+                                // Tasks
+                                _next_state[ S_ENABLE_K ]   <= 1'b1;
+        end
+
+        _state[S_START_P] : begin
+                                 // States      
+            if( m_p_handshake ) _next_state[ S_DLY_1 ]      <= 1'b1;
+            else                _next_state[ S_START_P ]    <= 1'b1;
+                                // Tasks
+                                _next_state[ S_ENABLE_P ]   <= 1'b1;
         end
 
         _state[S_DLY_1] : begin
-            if( m_k_handshake || m_p_handshake ) begin
                                 _next_state[ S_DONE ]       <= 1'b1;
-            end
-            else begin
-                                _next_state[ S_DLY_1 ]      <= 1'b1;
-            end
         end
 
-        _state[S_DONE] : begin
-                                _next_state[ S_DONE ]       <= 1'b1;
-            if( CTRL[0] )
+        _next_state[S_DONE] : begin
+                                _next_state[ S_IDLE ]       <= 1'b1;
+                            _next_state[ S_NOT_ENABLE_K ]   <= 1'b1;
+                            _next_state[ S_NOT_ENABLE_P ]   <= 1'b1;                            
         end
 
     endcase
@@ -154,12 +176,10 @@ always_ff@( posedge CLK or RESET ) begin
         case( 1'b1 )
             
             _next_state[ S_ENABLE_K ] : m_k_enable <= 1'b1;
+            _next_state[ S_NOT_ENABLE_K ] : m_k_enable <= 1'b0;
 
             _next_state[ S_ENABLE_P ] : m_p_enable <= 1'b1;
-
-            _next_state[ S_READ_K ] : READ <= m_k_READ;
-            
-            _next_state[ S_READ_P ] : READ <= m_p_READ;
+            _next_state[ S_NOT_ENABLE_P ] : m_k_enable <= 1'b0;
 
         endcase
     end

@@ -15,6 +15,7 @@ module memory_access_tb;
 
 	//Outputs
     logic [47:0] read_output;
+    logic handshake;
 	
 	// Instantiate the Device Under Test (DUT)
 	memory_access DUT(
@@ -24,12 +25,13 @@ module memory_access_tb;
         .ENABLE( enable ),
         .CTRL( ctrl ),
         .ADDRESS( address_input ),
-        .READ( read_output )
+        .READ( read_output ),
+        .HANDSHAKE( handshake )
     );
 
 	//Initialize clock
 	initial begin
-		clk = 1'b0;
+		clk = 1'b1;
 			forever begin
 			#5;
 			clk = ~clk;
@@ -44,6 +46,7 @@ module memory_access_tb;
         .CLK_CPU(  )
     );
 	initial begin
+        $display("MEMORY ACCESS MODULE TESTBENCH");
 		// Initialize Inputs
         enable = 1'b0;
         ctrl = 3'bx;
@@ -58,9 +61,20 @@ module memory_access_tb;
         address_input = 32'H00010002;
 
         #20;
-        enable = 1'b1;
+        enable = 1'b1; // Last operation is completed in 7 cycles.
+        #71; // Wait 7 cycles
 
-        #100;
+        $display("TEST 1: SINGULAR VALUE FROM KERNEL MEMORY =");
+        if( enable & handshake ) begin
+            if( read_output == 48'Hffffffffffff ) begin
+                $display("SINGULAR VALUE IN KERNEL MEMORY: OK! (expected value:48'Hffffffffffff)");
+            end
+            else begin
+                $display("SINGULAR VALUE IN KERNEL MEMORY: FAILED... (expected value:48'Hffffffffffff)");
+            end
+            enable = 1'b0;
+        end
+        
         //$stop;
 
 	end
