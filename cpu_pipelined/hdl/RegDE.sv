@@ -28,43 +28,44 @@ logic [SIZE-1:0] RD1_tmp, RD2_tmp, ExtImmD_tmp;
 logic [3:0] RA1D_temp, RA2D_temp;
 logic [1:0] Flags_tmp;
 
-always@(negedge CLK || CLR)//se debe cambiar por negedge
+always@(CLR)
 begin
-    if(CLR) begin
-        PCSrcD_tmp      = 1'b0;
-        RegWriteD_tmp   = 1'b0;
-        MemToRegD_tmp   = 1'b0;
-        MemWriteD_tmp   = 1'b0;
-        BranchD_tmp     = 1'b0;
-        ALUSrcD_tmp     = 1'b0;
-        FlagWriteD_tmp  = 1'b0;
-        ALUControlD_tmp = 3'b0;
-        Flags_tmp       = 2'b0;
-        CondD_tmp       = 4'b0;
-        WA3D_tmp        = 4'b0;
-        RD1_tmp         = {SIZE{1'b0}};
-        RD2_tmp         = {SIZE{1'b0}};
-        ExtImmD_tmp     = {SIZE{1'b0}};
-        RA1D_temp		  = 4'b0000;
-        RA2D_temp		  = 4'b0000;
-    end else begin
-        PCSrcD_tmp      <= PCSrcD;
-        RegWriteD_tmp   <= RegWriteD;
-        MemToRegD_tmp   <= MemToRegD;
-        MemWriteD_tmp   <= MemWriteD;
-        BranchD_tmp     <= BranchD;
-        ALUSrcD_tmp     <= ALUSrcD;
-        FlagWriteD_tmp  <= FlagWriteD;
-        ALUControlD_tmp <= ALUControlD;
-        Flags_tmp       <= Flags;
-        CondD_tmp       <= CondD;
-        WA3D_tmp        <= WA3D;
-        RD1_tmp         <= RD1;
-        RD2_tmp         <= RD2;
-        ExtImmD_tmp     <= ExtImmD;
-        RA1D_temp		<= RA1D;
-        RA2D_temp		<= RA2D;
-    end
+    PCSrcD_tmp      = 1'b0;
+    RegWriteD_tmp   = 1'b0;
+    MemToRegD_tmp   = 1'b0;
+    MemWriteD_tmp   = 1'b0;
+    BranchD_tmp     = 1'b0;
+    ALUSrcD_tmp     = 1'b0;
+    FlagWriteD_tmp  = 1'b0;
+    ALUControlD_tmp = 3'b0;
+    Flags_tmp       = 2'b0;
+    CondD_tmp       = 4'b0;
+    WA3D_tmp        = 4'b0;
+    RD1_tmp         = {SIZE{1'b0}};
+    RD2_tmp         = {SIZE{1'b0}};
+    ExtImmD_tmp     = {SIZE{1'b0}};
+	 RA1D_temp		  = 4'b0000;
+	 RA2D_temp		  = 4'b0000;
+end
+
+always@(negedge CLK)//se debe cambiar por negedge
+begin
+    PCSrcD_tmp      <= PCSrcD;
+    RegWriteD_tmp   <= RegWriteD;
+    MemToRegD_tmp   <= MemToRegD;
+    MemWriteD_tmp   <= MemWriteD;
+    BranchD_tmp     <= BranchD;
+    ALUSrcD_tmp     <= ALUSrcD;
+    FlagWriteD_tmp  <= FlagWriteD;
+    ALUControlD_tmp <= ALUControlD;
+    Flags_tmp       <= Flags;
+    CondD_tmp       <= CondD;
+    WA3D_tmp        <= WA3D;
+    RD1_tmp         <= RD1;
+    RD2_tmp         <= RD2;
+    ExtImmD_tmp     <= ExtImmD;
+	RA1D_temp		<= RA1D;
+	RA2D_temp		<= RA2D;
 end
 
 assign PCSrcE       = PCSrcD_tmp;
