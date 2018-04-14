@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module RegPC #(
+/**module RegPC #(
     parameter SIZE = 32
 )(
     input logic StallF, CLK, RESET,
@@ -32,9 +32,9 @@ end
 
 assign PCF = PCF_tmp;
 
-endmodule
+endmodule*/
 
-/**`timescale 1ns / 1ps
+`timescale 1ns / 1ps
 
 module RegPC #(
     parameter SIZE = 32
@@ -46,7 +46,7 @@ module RegPC #(
 
 logic [SIZE-1:0] PCF_tmp;
 
-always@(negedge CLK & RESET)
+always@(negedge CLK || RESET)
 begin
     //if (RESET)
     //    PCF_tmp <= {SIZE{1'bx}};
@@ -61,4 +61,4 @@ end
 
 assign PCF = PCF_tmp;
 
-endmodule */
+endmodule 

@@ -30,7 +30,7 @@ always@(*) begin
 		2'b00: 	       //Data-processing inmediate //Data-processing register
 			controls = (Funct[5]) ? 10'b0000101001 : 10'b0000001001;
 			
-													//LDR				  //STR
+													//LDR				  //STR //Memory processing
 		2'b01:  	controls = (Funct[0]) ? 10'b0001111000 : 10'b1001110100;
 		
 		2'b10:	controls = 10'b0110100010; //B
