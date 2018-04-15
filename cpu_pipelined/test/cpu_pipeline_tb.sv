@@ -3,7 +3,7 @@
 // CPU module testbench
 module cpu_pipeline_tb;
 
-    parameter SIZE = 32;
+    parameter SIZE = 48;
 
 	// Inputs
 	logic clk;
@@ -56,14 +56,14 @@ module cpu_pipeline_tb;
 	end
 	
 	//Stimulus
-    instruction_rom ir(
+    instruction_rom #(48) ir(
         .CLK( clk ),
         .Reset( reset ),
         .Address( pc ),
         .Instr( instr )
     );
 
-    dmem dm(
+    dmem #(48) dm(
         .CLK( clk ),
         .WE( mem_write ),
         .A( addr_data ),

@@ -4,16 +4,16 @@ module RegEM #(
     parameter SIZE = 32
 )(
     input logic CLK, PCSrcE2, RegWriteE2, MemToRegE, MemWriteE2, 
-    input logic [3:0] WA3E,
-	 input logic [SIZE-1:0] ALUResultE, WriteDataE,	
+    input logic [4:0] WA3E,
+	input logic [SIZE-1:0] ALUResultE, WriteDataE,	
     output logic PCSrcM, RegWriteM, MemToRegM, MemWriteM, 
-    output logic [3:0] WA3M,
-	 output logic [SIZE-1:0] ALUOutM, WriteDataM
+    output logic [4:0] WA3M,
+	output logic [SIZE-1:0] ALUOutM, WriteDataM
 
 );
 
 logic PCSrcE2_tmp, RegWriteE2_tmp, MemToRegE_tmp, MemWriteE2_tmp;
-logic [3:0] WA3E_tmp;
+logic [4:0] WA3E_tmp;
 logic [SIZE-1:0] ALUResultE_temp, WriteDataE_temp;
 
 

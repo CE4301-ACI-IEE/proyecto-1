@@ -101,7 +101,6 @@ parameter   S_IDLE = 0,
             S_DONE = 9,
             S_NOT_ENABLE_K = 10,
             S_NOT_ENABLE_P = 11;
-;
 
 logic [STATE_MAX:0] _state, _next_state;
 logic [47:0] read_tmp;

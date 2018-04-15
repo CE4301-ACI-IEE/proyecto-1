@@ -3,7 +3,7 @@
 module hazard 
 (
     input   logic       RegWriteM, RegWriteW, MemToRegE, BranchTakenE, PCSrcD, PCSrcE, PCSrcM, PCSrcW,Reset,
-    input   logic [3:0] RA1D, RA2D, RA1E, RA2E, WA3M, WA3W, WA3E,
+    input   logic [4:0] RA1D, RA2D, RA1E, RA2E, WA3M, WA3W, WA3E,
     output  logic       StallF, StallD, FlushD, FlushE,
     output  logic [1:0] FowardAE, FowardBE,
     output  logic [3:0] match
