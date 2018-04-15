@@ -6,3 +6,6 @@ cpu_pipilined/simulation.mpf
 cpu_pipelined/transcript
 cpu_pipelined/simulation.mpf
 cpu_pipelined/vsim.wlf
+cpu_test/*
+cpu_pipelined/cpu_pipeline_test/*
+cpu_pipelined/cpu_pipeline_test.*
