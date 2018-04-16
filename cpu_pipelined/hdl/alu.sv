@@ -49,7 +49,7 @@ module ALU
 			Result[15:0]	<= PosC*OPERB[15:0];
 		end else if (ALUControlE == 4'b0110) begin //Normal multiplication
 			Result <= OPERA * OPERB;
-		end else if (ALUControlE == 4'b0111) begin 
+		end else if (ALUControlE == 4'b0111) begin //Concat
 			Result[47:32] 	<= 16'b0;
 			Result[31:16] 	<= PosC;
 			Result[15:0]	<= OPERB[15:0];

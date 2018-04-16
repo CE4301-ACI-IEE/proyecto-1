@@ -16,7 +16,7 @@ module cpu_pipeline_tb;
     logic [SIZE-1:0] pc,instrD;
     logic [SIZE-1:0] addr_data;
     logic [SIZE-1:0] write_data;
-
+    logic [6:0] CtrlD,CtrlE,CtrlM;
     // Debug outputs
     //logic pc_src;
     //logic [31:0] pc_plus4;
@@ -35,7 +35,10 @@ module cpu_pipeline_tb;
         .ALUOutM( addr_data ),
         .WriteDataM( write_data ),
         .MemoryControl(),
-        .iD(instrD)
+        .iD(instrD),
+        .Ctrl_D(CtrlD),
+        .Ctrl_E(CtrlE),
+        .Ctrl_M(CtrlM)
         // Test wires
         //.PCSrc( pc_src ),
         //.PCPlus4( pc_plus4 ),

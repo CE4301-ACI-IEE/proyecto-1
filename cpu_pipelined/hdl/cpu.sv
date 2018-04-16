@@ -11,7 +11,8 @@ module cpu (
 	output logic [47:0] WriteDataM,
 	output logic [2:0] MemoryControl, //Controlar el memory controller 
 	output logic [47:0]PCF,
-	output logic [47:0]iD 
+	output logic [47:0]iD,
+	output logic [6:0] Ctrl_D,Ctrl_E,Ctrl_M
 	//output logic [47:0] PCPlus4,	//for debug
 	//output logic [3:0] RA1, RA2, //for debug
 	//output logic [47:0] RD1, RD2, //for debug
@@ -58,6 +59,7 @@ logic [1:0] forwardAE, forwardBE;
 
 //RegFD wires
 logic [47:0]instD;
+logic [6:0] CtrlD;
 
 //RegDE wires
 logic pc_srcE;
@@ -75,6 +77,7 @@ logic [47:0] rd1_E;
 logic [47:0] rd2_E;
 logic [47:0] ext_immE;
 logic [4:0]	ra1E, ra2E;
+logic [6:0] CtrlE;
 
 //RegEM wires
 logic pc_srcM;
@@ -84,6 +87,7 @@ logic mem_to_regM;
 logic [47:0] alu_outM;
 logic [4:0] wa3M;
 logic [47:0] writedata_M;
+logic [6:0] CtrlM;
 
 //RegMW wires
 logic pc_srcW;
@@ -134,7 +138,8 @@ decoder dec( .Op( instD[43:41] ),
 				.ImmSrcD( imm_srcD ), 
 				.RegSrc( reg_src ), 
 				.ALUControlD( alu_controlD ),
-				.BranchD(branchD)	);
+				.BranchD(branchD),
+				.Ctrl(CtrlD));
 
 // Next PC logic
 
@@ -189,13 +194,13 @@ RegDE #(48) reg_de(	.CLK(CLK), .PCSrcD(pc_srcD), .RegWriteD(reg_writeD), .MemToR
 					.RA1D(ra1_D), .RA2D(ra2_D), .PCSrcE(pc_srcE), .RegWriteE(reg_writeE), .MemToRegE(mem_to_regE),
 					.MemWriteE(mem_writeE), .BranchE(branchE), .ALUSrcE(alu_srcE), .FlagWriteE(flag_writeE),
 					.ALUControlE(alu_controlE), .FlagsE(flagsE), .CondE(condE), .WA3E(wa3E), .RE1(rd1_E), 
-					.RE2(rd2_E), .ExtImmE(ext_immE), .RA1E(ra1E), .RA2E(ra2E)	);
+					.RE2(rd2_E), .ExtImmE(ext_immE), .RA1E(ra1E), .RA2E(ra2E), .CtrlD(CtrlD), .CtrlE(CtrlE));
 					
 //RegEM Logic //checked for 48 bits
 RegEM #(48)	reg_em(	.CLK(CLK), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .MemToRegE(mem_to_regE), .MemWriteE2(mem_writeE2),
 					.WA3E(wa3E), .ALUResultE(alu_resultE), .WriteDataE(writedata_E),	
 					.PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM), .MemWriteM(mem_writeM),
-					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M) );
+					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M), .CtrlE(CtrlE), .CtrlM(CtrlM));
 
 //RegMW Logic //checked for 48 bits
 RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM),
@@ -236,6 +241,9 @@ assign ALUOutM = alu_outM;
 assign WriteDataM = writedata_M;
 assign PCF = pcF; 
 assign iD = instD;
+assign Ctrl_D = CtrlD;
+assign Ctrl_E = CtrlE;
+assign Ctrl_M = CtrlM;
 //assign PCPlus4 = pc_plus4;
 //assign RA1 = ra1_D;
 //assign RA2 = ra2_D;

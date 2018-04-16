@@ -10,6 +10,7 @@ module RegDE #(
     input logic [3:0] CondD, 
     input logic [SIZE-1:0] RD1, RD2, ExtImmD,
 	input logic [4:0] RA1D, RA2D, WA3D,
+    input logic [6:0] CtrlD,
 
     output logic PCSrcE, RegWriteE, MemToRegE, MemWriteE, 
     output logic BranchE, ALUSrcE, 
@@ -17,7 +18,8 @@ module RegDE #(
     output logic [3:0] ALUControlE,
     output logic [3:0] CondE, 
     output logic [SIZE-1:0] RE1, RE2, ExtImmE,
-	output logic [4:0] RA1E, RA2E, WA3E
+	output logic [4:0] RA1E, RA2E, WA3E,
+    output logic [6:0] CtrlE
 );
 
 logic CLK_tmp, PCSrcD_tmp, RegWriteD_tmp, MemToRegD_tmp, MemWriteD_tmp;
@@ -27,6 +29,7 @@ logic [3:0] CondD_tmp;
 logic [SIZE-1:0] RD1_tmp, RD2_tmp, ExtImmD_tmp;
 logic [4:0] RA1D_temp, RA2D_temp, WA3D_tmp;
 logic [1:0] Flags_tmp,FlagWriteD_tmp;
+logic [6:0] Ctrl_tmp;
 
 
 always@(negedge CLK or posedge CLR)//se debe cambiar por negedge
@@ -47,8 +50,9 @@ begin
         RD1_tmp         = {SIZE{1'b0}};
         RD2_tmp         = {SIZE{1'b0}};
         ExtImmD_tmp     = {SIZE{1'b0}};
-        RA1D_temp		  = 5'b0000;
-        RA2D_temp		  = 5'b0000;
+        RA1D_temp		= 5'b0000;
+        RA2D_temp		= 5'b0000;
+        Ctrl_tmp        = 7'd0;
     end else begin
         PCSrcD_tmp      <= PCSrcD;
         RegWriteD_tmp   <= RegWriteD;
@@ -66,6 +70,7 @@ begin
         ExtImmD_tmp     <= ExtImmD;
         RA1D_temp		<= RA1D;
         RA2D_temp		<= RA2D;
+        Ctrl_tmp        <= CtrlD;
     end
 end
 
@@ -85,5 +90,6 @@ assign RE2          = RD2_tmp;
 assign ExtImmE      = ExtImmD_tmp;
 assign RA1E			= RA1D_temp;
 assign RA2E         = RA2D_temp;
+assign CtrlE        = Ctrl_tmp;
 
 endmodule

@@ -14,7 +14,8 @@ output logic ALUSrcD,
 output logic [1:0] ImmSrcD,
 output logic [1:0] RegSrc,
 output logic [3:0] ALUControlD,
-output logic BranchD
+output logic BranchD,
+output logic [6:0] Ctrl
 );
 
 logic [9:0] controls;
@@ -22,22 +23,46 @@ bit branch_temp;
 bit ALUOp;
 logic [3:0] ALUControl_temp;
 logic [1:0] FlagW_temp;
+logic [6:0] mem_control;
 
 always@(*) begin
 	
 	case( Op )
-									
-		3'b000: 	       //Data-processing inmediate //Data-processing register
-			controls = (Funct[5]) ? 10'b0000101001 : 10'b0000001001;
-			
-											//LDR			//STR //Memory processing
-		3'b001:  	controls = (Funct[0]) ? 10'b0001111000 : 10'b1001110100;
+		//Data-processing inmediate //Data-processing register					
+		3'b000: begin
+					mem_control = 7'd0;
+					controls = (Funct[5]) ? 10'b0000101001 : 10'b0000001001;
+				end
+		//LDR and STR := Memory Processing
+		3'b001: begin
+					mem_control = 7'd0;
+					controls = (Funct[0]) ? 10'b0001111000 : 10'b1001110100;
+				end  	
+		//Branches
+		3'b010: begin
+					mem_control = 7'd0;
+					controls = 10'b0110100010;
+				end
 		
-		3'b010:	controls = 10'b0110100010; //B
-
-										//LDR-Concat //STR-Concat
-		3'b011: controls = (Funct[0])? 10'b0000011001:10'b0000010101;
-		default: controls = 10'bx; // DEfault
+		//reads kernel from kernel mem
+		3'b100: begin
+					controls = 10'b0000011001;
+					mem_control = (Funct[0])? 7'b1101010:7'b1100010;
+				end
+		//saves picture in the RAM
+		3'b101: begin
+					controls = 10'b0000100101;
+					mem_control = 7'b0000001;
+				end
+		//reads the pixel from ROM
+		3'b110: begin
+					controls = 10'b0000011001;
+					mem_control = 7'b1101110;
+				end
+		default: begin
+					controls = 10'bx; // DEfault
+					mem_control = 6'bx;
+				end
 		
 	endcase
 	
@@ -77,5 +102,6 @@ assign PCSrcD = ((Rd==5'b01111) & RegWriteD) | branch_temp;
 assign ALUControlD = ALUControl_temp;
 assign FlagWriteD = FlagW_temp;
 assign BranchD = branch_temp;
+assign Ctrl = mem_control;
 
 endmodule
