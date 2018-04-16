@@ -41,7 +41,7 @@ always@(*) begin
 		//Branches
 		3'b010: begin
 					mem_control = 7'd0;
-					controls = 10'b0110100010;
+					controls = 10'b0010100010;
 				end
 		
 		//reads kernel from kernel mem
@@ -52,12 +52,12 @@ always@(*) begin
 		//saves picture in the RAM
 		3'b101: begin
 					controls = 10'b0000100101;
-					mem_control = 7'b0000001;
+					mem_control = 7'b0100001;
 				end
 		//reads the pixel from ROM
 		3'b110: begin
 					controls = 10'b0000011001;
-					mem_control = 7'b1101110;
+					mem_control = 7'b1001110; //Flags to be able to control mem section
 				end
 		default: begin
 					controls = 10'bx; // DEfault
