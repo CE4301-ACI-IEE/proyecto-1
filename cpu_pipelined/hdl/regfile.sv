@@ -20,7 +20,7 @@ always@(posedge CLK) begin
 	if( WE3 ) rf[RA3] <= WD3;
 end
 
-assign RD1 = (RA1 == 4'b1111) ? R15 : rf[RA1];
-assign RD2 = (RA2 == 4'b1111) ? R15 : rf[RA2];
+assign RD1 = (RA1 == 5'b01111) ? R15 : rf[RA1];
+assign RD2 = (RA2 == 5'b01111) ? R15 : rf[RA2];
 
 endmodule

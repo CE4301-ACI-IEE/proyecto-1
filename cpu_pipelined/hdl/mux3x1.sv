@@ -15,6 +15,7 @@ module mux3x1 #(
             2'b00: reg_tmp = RegFile;
             2'b01: reg_tmp = ResultW;
             2'b10: reg_tmp = ALUOutM;
+			default: reg_tmp = RegFile;
         endcase
     end
 
