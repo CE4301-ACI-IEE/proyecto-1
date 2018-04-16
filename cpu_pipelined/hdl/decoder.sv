@@ -51,7 +51,7 @@ always@(*) begin
 				end
 		//saves picture in the RAM
 		3'b101: begin
-					controls = 10'b0000100101;
+					controls = 10'b1000100101;
 					mem_control = 7'b0100001;
 				end
 		//reads the pixel from ROM
