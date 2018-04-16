@@ -36,7 +36,7 @@ f = open( path, "w+" )
 
 # initilize module
 f.write( "`timescale 1ns / 1ps\n" )
-f.write( "module mem_pic #( parameter SIZE = 8 )\n(\n\t" )
+f.write( "module mem_pic #( parameter SIZE = 16 )\n(\n\t" )
 # inputs and outputs of module
 f.write( "input logic CLK,\n\t" )
 f.write( "input logic [31:0] ADDRESS,\n\t" )
@@ -57,10 +57,10 @@ for i in range( d.shape[0] ):
         f.write( "32'H")
         f.write( tohex( i, 16 ).zfill(4) )
         f.write( tohex( j, 16 ).zfill(4) )
-        f.write( ": READ <= 8'H%s;\n\t\t" % tohex( val, N_BITS ) )
+        f.write( ": READ <= 16'H%s;\n\t\t" % tohex( val, N_BITS ) )
         aux_addr += 1
 
-f.write( "default: READ <= 8'b0;\n\t" )
+f.write( "default: READ <= 16'b0;\n\t" )
 f.write( "endcase\n\t" )
 f.write( "end\n" )
 f.write( "\nendmodule\n" ) # endmodule

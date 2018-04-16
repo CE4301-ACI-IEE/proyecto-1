@@ -77,30 +77,42 @@ module memory_controller_tb;
         ctrl = 2'b10;
         alu_address = 32'H00010002;
         
-        #60;
+        #20; // wait 2 cycles // It is expected that this cycles do not generate error
+        alu_address = 32'Hx; // Error data. // Without error
+        #30; // wait 3 cycles
         $display("SINGULAR VALUE IN DIR: 32'H00010002");
-        if( read_data == 48'Hffffffffffff )
+        if( read_data == 48'Hffffffffffff ) begin
             $display("SINGULAR VALUE: OK! (expected value:48'Hffffffffffff)");
+            enable = 0;
+        end
         else
             $display("SINGULAR VALUE: FAILED...");
-        #20;
+        #10; // wait 2 cycles
 
         enable = 1'b0;
         alu_address = 32'H00020002;
         ctrl = 2'b00;
 
-        #40;
-        enable = 1'b1;
+        #40; // wait 4 cycles
+        enable = 1'b1; 
         alu_address = 32'H00020001;
         ctrl = 2'b11;
 
-        #100;
+        #60;
+        alu_address = 32'Hx;
+        ctrl = 2'bx;
+        #30;
         $display("MULTIPLE VALUES IN DIR: 32'H00020001, VERTICAL");
-        if( read_data == 48'H00000000ffff )
+        if( read_data == 48'H00000000ffff ) begin
             $display("MULTIPLE VALUES: OK! (expected value:48'H00000000ffff)");
+            enable = 0;
+        end
         else
             $display("MULTIPLE VALUES: FAILED...");
-       
+
+        alu_address = 32'H0;
+        ctrl = 2'b0;
+        #40; // wait 4 cycles               
         $stop;
 
 	end
