@@ -37,7 +37,6 @@ logic [31:0] m_p_ADDRESS;
 logic [47:0] m_p_READ;
 logic m_p_handshake;
 
-
 mem_kernel m_k (
         .CLK( CLK ),
 		.ADDRESS( m_k_address ),
@@ -76,109 +75,107 @@ memory_controller mc_p(
         ._state_(  ) // For debugging
     );
 
-assign m_k_ctrl[0] = CTRL[1];
-assign m_k_ctrl[1] = CTRL[2];
+logic [31:0] _local_address;
+logic [2:0] _local_ctrl;
+logic [47:0] _local_read_output;
 
-assign m_p_ctrl[0] = CTRL[1];
-assign m_p_ctrl[1] = CTRL[2];
+assign m_k_ctrl[0] = _local_ctrl[1];
+assign m_k_ctrl[1] = _local_ctrl[2];
 
-assign m_k_ADDRESS = ADDRESS[31:0];
-assign m_p_ADDRESS = ADDRESS[31:0];
+assign m_p_ctrl[0] = _local_ctrl[1];
+assign m_p_ctrl[1] = _local_ctrl[2];
 
-assign READ = ( ~CTRL[0] ) ? m_k_READ : m_p_READ ;
-assign HANDSHAKE = ( ~CTRL[0] ) ? m_k_handshake : m_p_handshake ;
+assign m_k_ADDRESS = _local_address;
+assign m_p_ADDRESS = _local_address;
 
-parameter   STATE_MAX = 12;
-parameter   S_IDLE = 0,
-            S_START = 1,
-            S_ENABLE_K = 2,
-            S_ENABLE_P = 3,
-            S_READ_K = 4,
-            S_READ_P = 5,
-            S_START_K = 6,
-            S_START_P = 7,
-            S_DLY_1 = 8,
-            S_DONE = 9,
-            S_NOT_ENABLE_K = 10,
-            S_NOT_ENABLE_P = 11;
+logic [15:0] _state;
+logic [15:0] _next_state;
+parameter   SS = 00,
+            S0 = 01,
+            S10 = 10,
+            S20 = 20,
+            S_DONE = 30;
 
-logic [STATE_MAX:0] _state, _next_state;
-logic [47:0] read_tmp;
-
-always_ff@( posedge CLK or RESET ) begin
-    if( RESET ) begin
-        _state <= {STATE_MAX{1'b0}};
-        _state[ S_IDLE ] <= 1'b1;
+always_ff@( posedge CLK ) begin
+    if( ~ENABLE ) begin
+        _state <= SS;
     end
-    else _state <= _next_state;
+    else begin
+        _state <= _next_state;
+    end
 end
 
-always_ff@( _state or ENABLE or CTRL[0] or m_k_handshake or m_p_handshake) begin
-    _next_state <= {STATE_MAX{1'b0}};
-    case( 1'b1 )
+always_comb begin
+    case( _state )
 
-        _state[S_IDLE] : begin
-            if( ENABLE )        _next_state[ S_START ]      <= 1'b1;
-            else                _next_state[ S_IDLE ]       <= 1'b1;
+        SS: begin
+            if( ENABLE ) begin
+                                _next_state = S0;
+                                _local_address = ADDRESS[31:0];
+                                _local_ctrl = CTRL;
+            end
+            else begin                
+                                _next_state = SS;
+                                _local_address = 32'bx;
+                                _local_ctrl = 3'bx;
+            end
+                                m_k_enable = 1'b0;
+                                m_p_enable = 1'b0; 
         end
 
-        _state[S_START] : begin
-            if( ~CTRL[0] ) begin // States      
-                                _next_state[ S_START_K ]    <= 1'b1;
-                                // Tasks
-                                _next_state[ S_ENABLE_K ]   <= 1'b1;
-            end                 
-            else begin          // States
-                                _next_state[ S_START_P ]    <= 1'b1;
-                                // Tasks
-                                _next_state[ S_ENABLE_P ]   <= 1'b1;
+        S0: begin
+            if(~_local_ctrl[0]) begin
+                                _next_state = S10;
+                                m_k_enable = 1'b1;
+            end
+            else begin                
+                                _next_state = S20;
+                                m_p_enable = 1'b1;
             end
         end
-        
-        _state[S_START_K] : begin
-                                 // States      
-            if( m_k_handshake ) _next_state[ S_DLY_1 ]      <= 1'b1;
-            else                _next_state[ S_START_K ]    <= 1'b1;
-                                
-                                // Tasks
-                                _next_state[ S_ENABLE_K ]   <= 1'b1;
+
+        S10: begin
+            if( m_k_handshake ) begin
+                                _next_state = S_DONE;
+            end
+            else                _next_state = S10;
         end
 
-        _state[S_START_P] : begin
-                                 // States      
-            if( m_p_handshake ) _next_state[ S_DLY_1 ]      <= 1'b1;
-            else                _next_state[ S_START_P ]    <= 1'b1;
-                                // Tasks
-                                _next_state[ S_ENABLE_P ]   <= 1'b1;
-        end
-
-        _state[S_DLY_1] : begin
-                                _next_state[ S_DONE ]       <= 1'b1;
-        end
-
-        _next_state[S_DONE] : begin
-                                _next_state[ S_IDLE ]       <= 1'b1;
-                            _next_state[ S_NOT_ENABLE_K ]   <= 1'b1;
-                            _next_state[ S_NOT_ENABLE_P ]   <= 1'b1;                            
+        S20: begin
+            if( m_p_handshake ) begin
+                                _next_state = S_DONE;
+            end
+            else                _next_state = S20;
         end
 
     endcase
 end
 
-always_ff@( posedge CLK or RESET ) begin
-    if( RESET ) begin
-        read_tmp <= 48'bx;
-        m_k_enable <= 1'b0;
-        m_p_enable <= 1'b0;
-    end
-    else begin
-        case( 1'b1 )
-            
-            _next_state[ S_ENABLE_K ] : m_k_enable <= 1'b1;
-            _next_state[ S_NOT_ENABLE_K ] : m_k_enable <= 1'b0;
+always_ff@( posedge CLK ) begin
+    if( CLK_MEM ) begin
+        case( _state )
 
-            _next_state[ S_ENABLE_P ] : m_p_enable <= 1'b1;
-            _next_state[ S_NOT_ENABLE_P ] : m_k_enable <= 1'b0;
+            SS: begin
+                READ <= 48'bx;
+                HANDSHAKE <= 1'b0;
+            end
+
+            S0: begin
+            end
+
+            S10: begin
+                READ <= m_k_READ;
+                HANDSHAKE <= m_k_handshake;
+            end
+
+            S20: begin
+                READ <= m_p_READ;
+                HANDSHAKE <= m_p_handshake;
+            end
+
+            S_DONE: begin
+                //HANDSHAKE <= 1'b1;
+            end
 
         endcase
     end
