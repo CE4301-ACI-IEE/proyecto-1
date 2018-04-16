@@ -89,6 +89,10 @@ logic [4:0] wa3M;
 logic [47:0] writedata_M;
 logic [6:0] CtrlM;
 
+//MemoryAccess wire
+logic [47:0] _read_ma;
+logic [47:0] _read_dmem;
+
 //RegMW wires
 logic pc_srcW;
 logic reg_writeW;
@@ -202,6 +206,27 @@ RegEM #(48)	reg_em(	.CLK(CLK), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .Me
 					.PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM), .MemWriteM(mem_writeM),
 					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M), .CtrlE(CtrlE), .CtrlM(CtrlM));
 
+//Memory access modules
+memory_access ma_KP(
+        .CLK( CLK ),
+        .CLK_MEM(  ),
+        .RESET( Reset ),
+        .ENABLE( CtrlM[1] ),
+        .CTRL( CtrlM[4:2] ),
+        .ADDRESS( alu_outM ),
+        .READ( _read_ma ),
+        .HANDSHAKE( handshake )
+    );
+
+dmem ma_ram(
+        .CLK( CLK ),
+        .WE( mem_writeM ),
+        .A( alu_outM ),
+        .WD( writedata_M ),
+        .RD( _read_dmem )
+    );
+
+mux2x1 #(48) mux_memory( CtrlM[5], _read_ma, _read_dmem, ReadDataM );
 //RegMW Logic //checked for 48 bits
 RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM),
 					.WA3M(wa3M), .ALUOutM(alu_outM), .ReadDataM(ReadDataM),	
