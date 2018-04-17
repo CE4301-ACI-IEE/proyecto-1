@@ -15,7 +15,7 @@ always@( posedge CLK ) begin
 			48'd1: Instr  <= 48'HE14004000005;
 			48'd2: Instr  <= 48'HE2C004000064;
 			48'd3: Instr  <= 48'HEA4084000000;
-			//48'd3: Instr  <= 48'HEC3086000000;
+			48'd4: Instr  <= 48'HEC3086000000;			
 			default: Instr <= 48'bx;
 		endcase
 	end

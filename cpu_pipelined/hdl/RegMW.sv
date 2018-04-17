@@ -23,8 +23,8 @@ begin
     RegWriteM_tmp    = RegWriteM;
     MemToRegM_tmp    = MemToRegM;
     WA3M_tmp         = WA3M;
-	 ALUOutM_temp	   = ALUOutM;
-	 ReadDataM_temp	= ReadDataM;
+	ALUOutM_temp	 = ALUOutM;
+    ReadDataM_temp	 = ReadDataM;
 end
 
 assign PCSrcW       = PCSrcM_tmp;

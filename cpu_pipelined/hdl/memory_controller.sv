@@ -40,7 +40,7 @@ always_ff@( posedge CLK ) begin
         _state <= _next_state;
 end
 
-always_comb begin
+always@(*) begin
     _next_state = 16'bx;
     case( _state )
         
