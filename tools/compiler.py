@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import sys
 import cv2
@@ -86,13 +87,21 @@ if (args > 2):
     
     try:
         file = open(sys.argv[1], "r")
-        i = 0
+        i = 0 #index corresponding to actual PC
         for line in file:
             split_line = line.split(' ')
             if (len(split_line)>2):
                 tags[split_line[0]] = i
                 print(tags)
             i+=1
+        i = 0
+        
+        this_file_dir = os.path.dirname(os.path.realpath('__file__'))
+        output_file = "../cpu_pipelined/hdl/instruction_rom.sv"
+        path = os.path.join(this_file_dir,output_file)
+        #f = open(path, "w+")
+        #a = hex((15+(1<<48))%(1<<48))
+        #print(a[2::])
     except:
         sys.exit("There has been an error opening the instruction file.")
 else:
