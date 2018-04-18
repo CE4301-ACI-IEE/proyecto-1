@@ -4,16 +4,17 @@
 
 # WIDTH OF THE MEMORY
 N_BITS = 8
-
+#/usr/bin/python3
 # convert to signed dec to hex
 def tohex( val, nbits ):
     a = hex((val+(1<<nbits))%(1<<nbits))
     return a[2::]
 
+import os
 # read arguments
 import sys
+
 import cv2
-import os
 
 print( "Starting..." )
 
