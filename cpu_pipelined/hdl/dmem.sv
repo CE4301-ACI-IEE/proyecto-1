@@ -7,12 +7,17 @@ module dmem #( parameter SIZE = 32 )
 	output logic [SIZE-1:0] RD
 );
 
-	logic [SIZE-1:0] RAM[63:0];
+	(* ram_init_file = "mem_pic_txt.mif" *) logic [SIZE-1:0] RAM[63:0];
+	//logic [SIZE-1:0] RAM[0:63];
 
-	always @ (posedge CLK) begin
-		if (WE) RAM[ A[ SIZE-1:2 ] ] <= WD; //word aligned
+	initial begin
+		$readmemh( "mem_pic_txt.hex", RAM );
 	end
 
-	assign RD = RAM[ A[ SIZE-1:2 ] ]; //word aligned
+	always @ (posedge CLK) begin
+		if (WE) RAM[ A/*[ SIZE-1:2 ]*/ ] <= WD; //word aligned
+	end
+
+	assign RD = RAM[ A/*[ SIZE-1:2 ]*/ ]; //word aligned
 
 endmodule

@@ -37,17 +37,17 @@ logic [31:0] m_p_ADDRESS;
 logic [47:0] m_p_READ;
 logic m_p_handshake;
 
-mem_kernel m_k (
+/*mem_kernel m_k (
         .CLK( CLK ),
 		.ADDRESS( m_k_address ),
 		.READ( m_k_read )
-);
+);*/
 
-mem_pic m_p (
+/*mem_pic m_p (
         .CLK( CLK ),
 		.ADDRESS( m_p_address ),
 		.READ( m_p_read )
-    );
+    );*/
 
 memory_controller mc_k (
         .CLK( CLK ),
@@ -105,7 +105,7 @@ always_ff@( posedge CLK ) begin
     end
 end
 
-always_comb begin
+always@(*) begin
     case( _state )
 
         SS: begin

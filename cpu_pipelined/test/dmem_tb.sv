@@ -3,7 +3,7 @@
 // Dynamic memory module testbench
 module dmem_tb;
 
-    parameter SIZE = 32;
+    parameter SIZE = 48;
     parameter MIN = 0;
     parameter MAX = 252;
 
@@ -16,7 +16,7 @@ module dmem_tb;
     logic [SIZE-1:0] rd;
 
 	// Instantiate the Device Under Test (DUT)
-    dmem DUT(
+    dmem #(48) DUT(
         .CLK( clk ),
         .WE( we ),
         .A( a ),
@@ -46,7 +46,7 @@ module dmem_tb;
         
 		// Add stimulus here
         // set data in dynamic memory
-        we = 1'b1;
+        //we = 1'b1;
         for( int i=MIN; i < MAX; i+=4 ) begin
             a = i;
             wd = i;
