@@ -4,10 +4,10 @@ import sys
 import cv2
 
 #Dictionary corresponding to cond-op-funct of one instruction
-inst = {
+nemo = {
             #cond op func
     'ADD'   :'1110000001000',
-    'SUB'   :'1110000000101',
+    'SUB'   :'1110000000100',
     'MUL'   :'1110000000010',
     'CMP'   :'1110000011111',
     'ADDI'  :'1110000101000', #Adds using immidiate
@@ -15,6 +15,7 @@ inst = {
     'MULI'  :'1110000100010', #Normal multiplication using immidiate
     'CMPI'  :'1110000111111', #Compares using immidiate
     'LDR'   :'1110001010001',
+    'B'     :'1110010000000',
     'STR'   :'1110001010000',
     'BEQ'   :'0000010100000',
     'VES'   :'1110000000000', #Vectorial sum
@@ -65,18 +66,18 @@ register = {
 
 #Dictionary used to know where the tags are and so generate the branch 
 tags = {}
-
-#Creates file corresponding to kernel_rom
-
-#Creates file corresponding to instruction_room
-
+#Converts number into 48-bit hexadecimal
+def tohex(number, bits):
+    a = hex((number+(1<<bits)))
+    return a[3::]
+            
 #Creates .mif for image
 def createmif(image):
     print(image)
+
 #Opens file and do file processing
 print("Start files generation...")
 args = len(sys.argv) #First argument is instruction file, next one is the image
-print(args)
 if (args > 2):
     try:
         image = cv2.imread(sys.argv[2])
@@ -90,21 +91,141 @@ if (args > 2):
         i = 0 #index corresponding to actual PC
         for line in file:
             split_line = line.split(' ')
-            if (len(split_line)>2):
+            if (len(split_line)>2 and not split_line[1]=="DCD"):
                 tags[split_line[0]] = i
-                print(tags)
-            i+=1
-        i = 0
+                i+=4
         
-        this_file_dir = os.path.dirname(os.path.realpath('__file__'))
-        output_file = "../cpu_pipelined/hdl/instruction_rom.sv"
-        path = os.path.join(this_file_dir,output_file)
-        #f = open(path, "w+")
-        #a = hex((15+(1<<48))%(1<<48))
-        #print(a[2::])
-    except:
+        #File operations for kernel rom
+        script_dir  = os.path.dirname(os.path.realpath('__file__'))
+        kernel_file = "../cpu_pipelined/hdl/mem_kernel1.sv"
+        kernel_path = os.path.join(script_dir,kernel_file)
+        file_kernel = open(kernel_path, "w+")
+        file_kernel.write("`timescale 1ns / 1ps\n")
+        file_kernel.write("module mem_kernel #( parameter SIZE = 16)\n")
+        file_kernel.write("(\n")
+        file_kernel.write("\tinput logic CLK,\n")
+        file_kernel.write("\tinput logic [47:0] ADDRESS,\n")
+        file_kernel.write("\toutput logic [SIZE-1:0] READ,\n")
+        file_kernel.write(");\n")
+        file_kernel.write("always_ff@(posedge CLK) begin\n")
+        file_kernel.write("\tcase (ADDRESS)\n")
+        
+        #File operations for instruction rom
+        instr_file = "../cpu_pipelined/hdl/instruction_room1.sv"
+        instr_path = os.path.join(script_dir,instr_file)
+        file = open(instr_path, "w+")
+        file.write("`timescale 1ns / 1ps\n")
+        file.write("module instruction_rom #( parameter SIZE = 32)\n")
+        file.write("(\n")
+        file.write("\tinput logic CLK,\n")
+        file.write("\tinput logic Reset,\n")
+        file.write("\tinput logic [SIZE-1:0] Address,\n")
+        file.write("\toutput logic [SIZE-1:0] Instr,\n")
+        file.write(");\n")
+        file.write("always@(posedge CLK) begin\n")
+        file.write("\tif( Reset ) Instr <= 48'bx\n")
+        file.write("\telse begin\n")
+        file.write("\t\tcase (Address/48'd4)\n")
+        files = open(sys.argv[1], "r")
+        pc = 0
+        for lines in files:
+            line = lines[:lines.rfind("\n")]
+            split_line = line.split(' ')
+            len_split = len(split_line)
+
+            instr_tmp   = ""
+            reg_tmp     = ""
+
+            if(len_split==3 and split_line[1]=="DCD"):
+                pos = split_line[2].split(',')
+                p = 0
+                for pos_data in pos:
+                    addr = "\t\t48'H"
+                    addr = addr + tohex(p,48) + ": READ <= 16'H" + tohex(int(pos_data),17)+"\n"
+                    file_kernel.write(addr)
+                    p += 1
+                pc = 0
+                file_kernel.write("\t\tdefault: READ <= 16'b0\n")
+                file_kernel.write("\tendcase\n")
+                file_kernel.write("end\n")
+                file_kernel.write("endmodule")
+                file_kernel.close()
+            elif (len_split == 2):
+                instr_tmp   = split_line[0]
+                reg_tmp     = split_line[1]
+            elif (len_split == 3):
+                instr_tmp   = split_line[1]
+                reg_tmp     = split_line[2]
+            else:
+                sys.exit("There has been an error on PC=%s" %i)
+            
+            try:
+                if(instr_tmp in nemo):
+                    registers = reg_tmp.split(',')
+                    addr = "\t\t\t48'H"
+                    addr += tohex((pc/4),48)+": Instr <= "
+                    instr = nemo[instr_tmp]
+                    len_reg = len(registers)
+                    if  (instr_tmp == "ADD" or instr_tmp == "SUB" or instr_tmp == "MUL"):
+                        if (len_reg == 3 and registers[2] in register):
+                            a = bin(0+1<<20)
+                            instr += register[registers[1]] + register[registers[0]] + str(a[3::]) + register[registers[2]]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+
+                    elif(instr_tmp == "CMP"):
+                        if (len_reg == 2 and registers[1] in register):
+                            a = bin(0+1<<25)
+                            instr += register[registers[0]] +  a[3::] + register[registers[2]]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+
+                    elif(instr_tmp == "ADDI" or instr_tmp == "SUBI" or instr_tmp == "MULI"):
+                        if (len_reg == 3 and not registers[2] in register):
+                            a = bin(0+(1<<13))
+                            b = bin(int(registers[2])+(1<<12))
+                            instr += register[registers[1]] + register[registers[0]] + a[3::] + b[3::]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+
+                    elif(instr_tmp == "CMPI"):
+                        if (len_reg == 2 and not registers[1] in register):
+                            a = bin(0+(1<<18))
+                            b = bin(int(registers[1])+(1<<12))
+                            instr += register[registers[0]] + a[3::] + b[3::]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+
+                    elif(instr_tmp == "BEQ" or instr_tmp == "B"):
+                        if (len_reg == 1 and registers[0] in tags):
+                            a = bin(0+(1<<11))
+                            pc_next = int(tags[registers[0]])
+                            imm = (pc_next - (pc+8))/4
+                            b = bin(imm+(1<<25))
+                            instr += a[3::] + b[3::]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+                    result = tohex(int(instr,2),48)
+                    addr += "48'H"+result+"\n"
+                    file.write(addr)
+                    pc += 4
+            except Exception as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_tb.tb_lineno)
+                print(exc_obj)
+                print(e.message)
+        
+        file.write("\t\t\tdefault: Instr <= 48'bx\n")
+        file.write("\t\tendcase\n")
+        file.write("\tend\n")
+        file.write("end\n")
+        file.write("endmodule")
+        file.close()
+
+    except Exception as e:
+        print(e.message)
         sys.exit("There has been an error opening the instruction file.")
 else:
     sys.exit("You must provide the image and instruction file")
 print("Process done, no error found.")
-print(inst["ADD"])

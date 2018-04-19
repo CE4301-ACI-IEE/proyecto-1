@@ -1,3 +1,6 @@
-casa DCD 0,0,0
-ADD R1,R2
-burdel REK R2,R2,R2
+kernel DCD -1,0,1
+loop ADD R0,R1,R2
+SUB R0,R3,R4
+BEQ loop
+SUB R0,R15,R15
+B loop
