@@ -10,9 +10,6 @@ cpu_test/*
 cpu_pipelined/cpu_pipeline_test/*
 cpu_pipelined/cpu_pipeline_test.*
 cpu_pipelined/quartus/*
-<<<<<<< HEAD
 cpu_pipelined/hdl/instruction_room1.sv
 cpu_pipelined/hdl/mem_kernel1.sv
-=======
 .vscode/*
->>>>>>> 97e65f742922b16b5f25165cf2f5f73084be3962
