@@ -47,7 +47,7 @@ always@(*) begin
 		//reads kernel from kernel mem
 		3'b100: begin
 					controls = 10'b0000011001;
-					mem_control = (Funct[0])? 7'b1101010:7'b1100010;
+					mem_control = (Funct[5])? 7'b1101010:7'b1100010;
 				end
 		//saves picture in the RAM
 		3'b101: begin
@@ -76,23 +76,23 @@ always@(*) begin
 	if( ALUOp ) begin  // ALU Operation
 		case( Funct[4:1] )
 			4'b0000: ALUControl_temp = 4'b0000; //Vectorial sum
-			4'b0001: ALUControl_temp = 4'b0110; //MUL
-			4'b0010: ALUControl_temp = 4'b0010; //SUB
+			4'b0001: ALUControl_temp = 4'b0110; //MUL(I)
+			4'b0010: ALUControl_temp = 4'b0010; //SUB(I)
 			4'b0011: ALUControl_temp = 4'b0111; //concatenación
-			4'b0100: ALUControl_temp = 4'b0011; //ADD
+			4'b0100: ALUControl_temp = 4'b0011; //ADD(I)
 			4'b1100: ALUControl_temp = 4'b0101; //Escalado
 			4'b1101: ALUControl_temp = 4'b0001; //Producto Punto
-			4'b1111: ALUControl_temp = 4'b0100; //CMP
+			4'b1111: ALUControl_temp = 4'b0100; //CMP(I)
 			default: ALUControl_temp = 4'bx; //Default
 		endcase
 		
 		// if bit S is activated, update flags (C & V)
 		FlagW_temp[1] = Funct[0];
 		FlagW_temp[0] = Funct[0] &
-				(ALUControl_temp==3'b011 | ALUControl_temp==3'b010);
+				(ALUControl_temp==4'b0011 | ALUControl_temp==4'b0010);
 	end 
 	else begin
-		ALUControl_temp = 3'b011; // add for branch and memory processing
+		ALUControl_temp = 4'b0011; // add for branch and memory processing
 		FlagW_temp = 2'b00; // don't update flags
 	end
 	

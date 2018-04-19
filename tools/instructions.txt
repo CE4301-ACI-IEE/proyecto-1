@@ -1,0 +1,3 @@
+casa DCD 0,0,0
+ADD R1,R2
+burdel REK R2,R2,R2
