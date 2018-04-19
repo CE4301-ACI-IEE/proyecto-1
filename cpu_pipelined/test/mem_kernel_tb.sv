@@ -1,45 +1,51 @@
 `timescale 1ns / 1ps
 
-//Copy this content to create a testbech file
+// Kernel memory testbench module
 module mem_kernel_tb;
 
-    parameter SIZE = 16 ;
-
 	// Inputs
-    logic [6:0] addr;
+	logic clk;
+    logic [3:0] addr;
+	logic [15:0] data;
+	logic enable;
 
 	//Outputs
-	logic [SIZE-1:0] read;
+	logic [15:0] read_q;
 
 	// Instantiate the Device Under Test (DUT)
-	mem_kernel #(SIZE) DUT (
-		.ADDRESS( addr ),
-		.READ( read )
+	mem_kernel DUT (
+		.address( addr ),
+		.clock( clk ),
+		.data( data ),
+		.wren( enable ),
+		.q( read_q )
     );
 
 	//Initialize clock
-	/*initial begin
-		clk = 1'b0;
+	initial begin
+		clk = 1'b1;
 			forever begin
 			#5;
 			clk = ~clk;
 		end
-	end*/
+	end
 	
 	//Stimulus 
 	
 	initial begin
 		// Initialize Inputs
-		addr = 6'bx;
+		addr = 4'bx;
+		data = 16'bx;
+		enable = 1'b0;
 		
 		// Wait 20 ns for global reset to finish
 		#20;
-		
-		addr = 6'H0;
+
 		// Add stimulus here
+		addr = 4'b0;
 		for( int i=0; i<9; i++ ) begin
 			#20;
-			addr = addr + 6'H4;
+			addr = ( i==8 ) ? addr : addr + 1'b1;
 		end
 
 	end

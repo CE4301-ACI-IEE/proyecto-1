@@ -1,21 +1,24 @@
 `timescale 1ns / 1ps
 
-//Copy this content to create a testbech file
+
 module mem_pic_tb;
 
-    parameter SIZE = 8 ;
-
 	// Inputs
+	logic [18:0] addr;
 	logic clk;
-    logic [32-1:0] addr;
+	logic [47:0] data;
+	logic enable_write;
 
 	//Outputs
-	logic [SIZE-1:0] read;
+	logic [47:0] output_q;
 
 	// Instantiate the Device Under Test (DUT)
-	mem_pic #(SIZE) DUT (
-		.ADDRESS( addr ),
-		.READ( read )
+	mem_pic DUT (
+		.address( addr ),
+		.clock( clk ),
+		.data( data ),
+		.wren( enable_write ),
+		.q( output_q )
     );
 
 	//Initialize clock
@@ -40,10 +43,9 @@ module mem_pic_tb;
 		// Add stimulus here
 		for( int i=0; i<9; i++ ) begin
 			#20;
-			addr = addr + 32'H4;
+			addr = addr + 32'H1;
 		end
 
 	end
 	
 endmodule
-
