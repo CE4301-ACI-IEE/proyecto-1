@@ -37,17 +37,26 @@ logic [31:0] m_p_ADDRESS;
 logic [47:0] m_p_READ;
 logic m_p_handshake;
 
-/*mem_kernel m_k (
-        .CLK( CLK ),
-		.ADDRESS( m_k_address ),
-		.READ( m_k_read )
-);*/
+logic [31:0] _read_address;
+logic [31:0] _local_address;
+logic [2:0] _local_ctrl;
+logic [47:0] _local_read_output;
 
-/*mem_pic m_p (
-        .CLK( CLK ),
-		.ADDRESS( m_p_address ),
-		.READ( m_p_read )
-    );*/
+mem_kernel rom_kernel (
+        .address( m_k_address ),
+        .clock( CLK ),
+        .data(  ),
+        .wren( 1'b0 ),
+        .q( m_k_read )
+);
+
+mem_pic rom_pic (
+        .address( m_p_address ),
+        .clock( CLK ),
+        .data(  ),
+        .wren( 1'b0 ),
+        .q( m_p_read )
+);
 
 memory_controller mc_k (
         .CLK( CLK ),
@@ -75,9 +84,13 @@ memory_controller mc_p(
         ._state_(  ) // For debugging
     );
 
-logic [31:0] _local_address;
-logic [2:0] _local_ctrl;
-logic [47:0] _local_read_output;
+conv_index_to_mem index_converter(
+    .CLK( CLK ),
+    .RESET( RESET ),
+    .SIZE_IMAGE( 1'b0 ),
+    .INDEX_ADDRESS( _read_address ),
+    .MEM_ADDRESS( _local_address )
+);
 
 assign m_k_ctrl[0] = _local_ctrl[1];
 assign m_k_ctrl[1] = _local_ctrl[2];
@@ -111,7 +124,7 @@ always@(*) begin
         SS: begin
             if( ENABLE ) begin
                                 _next_state = S0;
-                                _local_address = ADDRESS[31:0];
+                                _read_address = ADDRESS[31:0];
                                 _local_ctrl = CTRL;
             end
             else begin                

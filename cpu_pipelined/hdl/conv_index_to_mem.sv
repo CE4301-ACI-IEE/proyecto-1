@@ -19,12 +19,12 @@ always_ff@( posedge CLK or posedge RESET ) begin
         if( ~SIZE_IMAGE ) begin
             _width = 32'd640;
             _height = 32'd480;
-            _const_byte = 32'd4;
+            _const_byte = 32'd1;
         end
         else begin
             _width = 32'd1024;
             _height = 32'd768;
-            _const_byte = 32'd4;
+            _const_byte = 32'd1;
         end
     end
     else begin
