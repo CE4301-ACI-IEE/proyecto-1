@@ -10,3 +10,4 @@ cpu_test/*
 cpu_pipelined/cpu_pipeline_test/*
 cpu_pipelined/cpu_pipeline_test.*
 cpu_pipelined/quartus/*
+.vscode/*
