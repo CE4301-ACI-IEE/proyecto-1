@@ -2,8 +2,8 @@
 
 // CPU module
 module cpu (
-	//input logic CLK,
-	input logic MASTER_CLK,
+	input logic CLK,
+	//input logic MASTER_CLK,
 	input logic Reset,
 	input logic [47:0] Instr, //Instruccion desde el instruction rom
 	input logic [47:0] ReadDataM, //Dato desde las memorias
@@ -151,7 +151,7 @@ decoder dec( .Op( instD[43:41] ),
 
 mux2x1 #(48) pc_mux1( pc_srcW, pc_plus4, resultW, pc_temp ); //Checked for 48 bits
 mux2x1 #(48) pc_mux2( .s(BranchTakenE), .d0(pc_temp), .d1(alu_resultE), .y(pc_next) ); //Checked for 48 bits	
-RegPC  #(48)  pcreg(.RESET(Reset), .StallF(stallF), .CLK(MASTER_CLK), .PC(pc_next), .PCF(pcF) );//checked for 48 bits
+RegPC  #(48)  pcreg(.RESET(Reset), .StallF(stallF), .CLK(CLK), .PC(pc_next), .PCF(pcF) );//checked for 48 bits
 //flopr #(32) pcreg( CLK, Reset, pc_next, pc );
 adder #(48) pcadd1( pcF, 48'd4, pc_plus4 ); //checked for 48 bits
 //Diagrama la salida del adder pc_puls4 va directo a R15
@@ -209,16 +209,16 @@ RegEM #(48)	reg_em(	.CLK(CLK), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .Me
 					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M), .CtrlE(CtrlE), .CtrlM(CtrlM));
 
 //Gate clock
-gate_clk gc(
+/*gate_clk gc(
 	.MASTER_CLK( MASTER_CLK ),
 	.WAIT_SIGNAL( CtrlM[6] ),
 	.HANDSHAKE( handshake ),
 	.CLK_CPU( CLK )
-);
+);*/
 
 //Memory access modules
 memory_access ma_KP(
-        .CLK( MASTER_CLK ),
+        .CLK( CLK ),
         .CLK_MEM( 1'b1  ),
         .RESET( Reset ),
         .ENABLE( CtrlM[1] ),
@@ -228,7 +228,7 @@ memory_access ma_KP(
         .HANDSHAKE( handshake )
     );
 
-dmem ma_ram(
+dmem #(48) ma_ram(
         .CLK( CLK ),
         .WE( mem_writeM ),
         .A( alu_outM ),

@@ -7,11 +7,11 @@ module dmem #( parameter SIZE = 32 )
 	output logic [SIZE-1:0] RD
 );
 
-	(* ram_init_file = "mem_pic_txt.mif" *) logic [SIZE-1:0] RAM[63:0];
+	(* ram_init_file = "mem_pic.mif" *) logic [SIZE-1:0] RAM[63:0];
 	//logic [SIZE-1:0] RAM[0:63];
 
 	initial begin
-		$readmemh( "mem_pic_txt.hex", RAM );
+		$readmemh( "mem_pic.mif", RAM );
 	end
 
 	always @ (posedge CLK) begin

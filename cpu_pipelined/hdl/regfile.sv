@@ -14,8 +14,12 @@ module regfile #(
     output logic [SIZE-1:0] RD2
 );
 
-logic [SIZE-1:0] rf[15:0];
-
+logic [SIZE-1:0] rf[4:0];
+initial begin
+    for (int i=0; i<32; i++) begin
+        rf[i] = 48'b0;
+    end 
+end
 always@(posedge CLK) begin
 	if( WE3 ) rf[RA3] <= WD3;
 end

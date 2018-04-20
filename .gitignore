@@ -13,3 +13,5 @@ cpu_pipelined/quartus/*
 cpu_pipelined/hdl/instruction_room1.sv
 cpu_pipelined/hdl/mem_kernel1.sv
 .vscode/*
+sd/*
+SD-Card/*

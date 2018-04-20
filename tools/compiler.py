@@ -78,14 +78,7 @@ def createmif(image):
 #Opens file and do file processing
 print("Start files generation...")
 args = len(sys.argv) #First argument is instruction file, next one is the image
-if (args > 2):
-    try:
-        image = cv2.imread(sys.argv[2])
-        image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        createmif(image)
-    except:
-        sys.exit("There has been an error loading the image")
-    
+if (args > 1):
     try:
         file = open(sys.argv[1], "r")
         i = 0 #index corresponding to actual PC
@@ -97,21 +90,17 @@ if (args > 2):
         
         #File operations for kernel rom
         script_dir  = os.path.dirname(os.path.realpath('__file__'))
-        kernel_file = "../cpu_pipelined/hdl/mem_kernel1.sv"
+        kernel_file = "../cpu_pipelined/hdl/mem_kernel.mif"
         kernel_path = os.path.join(script_dir,kernel_file)
         file_kernel = open(kernel_path, "w+")
-        file_kernel.write("`timescale 1ns / 1ps\n")
-        file_kernel.write("module mem_kernel #( parameter SIZE = 16)\n")
-        file_kernel.write("(\n")
-        file_kernel.write("\tinput logic CLK,\n")
-        file_kernel.write("\tinput logic [47:0] ADDRESS,\n")
-        file_kernel.write("\toutput logic [SIZE-1:0] READ,\n")
-        file_kernel.write(");\n")
-        file_kernel.write("always_ff@(posedge CLK) begin\n")
-        file_kernel.write("\tcase (ADDRESS)\n")
+        file_kernel.write("WIDTH=16;\n")
+        file_kernel.write("DEPTH=9;\n")
+        file_kernel.write("ADDRESS_RADIX=UNS;\n")
+        file_kernel.write("DATA_RADIX=HEX;\n\n")
+        file_kernel.write("CONTENT BEGIN\n")
         
         #File operations for instruction rom
-        instr_file = "../cpu_pipelined/hdl/instruction_room1.sv"
+        instr_file = "../cpu_pipelined/hdl/instruction_rom.sv"
         instr_path = os.path.join(script_dir,instr_file)
         file = open(instr_path, "w+")
         file.write("`timescale 1ns / 1ps\n")
@@ -120,16 +109,21 @@ if (args > 2):
         file.write("\tinput logic CLK,\n")
         file.write("\tinput logic Reset,\n")
         file.write("\tinput logic [SIZE-1:0] Address,\n")
-        file.write("\toutput logic [SIZE-1:0] Instr,\n")
+        file.write("\toutput logic [SIZE-1:0] Instr\n")
         file.write(");\n")
         file.write("always@(posedge CLK) begin\n")
-        file.write("\tif( Reset ) Instr <= 48'bx\n")
+        file.write("\tif( Reset ) Instr <= 48'bx;\n")
         file.write("\telse begin\n")
         file.write("\t\tcase (Address/48'd4)\n")
         files = open(sys.argv[1], "r")
         pc = 0
+        print(tags)
         for lines in files:
-            line = lines[:lines.rfind("\n")]
+            line = ""
+            if("\n" in lines):
+                line = lines[:lines.rfind("\n")]
+            elif ("" in lines):
+                line = lines[:lines.rfind("")]
             split_line = line.split(' ')
             len_split = len(split_line)
 
@@ -140,15 +134,17 @@ if (args > 2):
                 pos = split_line[2].split(',')
                 p = 0
                 for pos_data in pos:
-                    addr = "\t\t48'H"
-                    addr = addr + tohex(p,48) + ": READ <= 16'H" + tohex(int(pos_data),17)+"\n"
+                    addr = "\t"
+                    addr = addr + str(p)+" : " +  tohex(int(pos_data),17)+";\n"
+                    file_kernel.write(addr)
+                    p += 1
+                while p <= 8:
+                    addr = "\t"
+                    addr = addr + str(p)+" : " +  tohex(0,17)+";\n"
                     file_kernel.write(addr)
                     p += 1
                 pc = 0
-                file_kernel.write("\t\tdefault: READ <= 16'b0\n")
-                file_kernel.write("\tendcase\n")
-                file_kernel.write("end\n")
-                file_kernel.write("endmodule")
+                file_kernel.write("END;")
                 file_kernel.close()
             elif (len_split == 2):
                 instr_tmp   = split_line[0]
@@ -161,12 +157,23 @@ if (args > 2):
             
             try:
                 if(instr_tmp in nemo):
+                    print(instr_tmp)
                     registers = reg_tmp.split(',')
                     addr = "\t\t\t48'H"
                     addr += tohex((pc/4),48)+": Instr <= "
                     instr = nemo[instr_tmp]
                     len_reg = len(registers)
-                    if  (instr_tmp == "ADD" or instr_tmp == "SUB" or instr_tmp == "MUL"):
+                    if  (
+                        instr_tmp == "ADD" or 
+                        instr_tmp == "SUB" or 
+                        instr_tmp == "MUL" or
+                        instr_tmp == "VES" or
+                        instr_tmp == "CNC" or
+                        instr_tmp == "SCL" or
+                        instr_tmp == "DOT" or
+                        instr_tmp == "REK" or
+                        instr_tmp == "RKM" or
+                        instr_tmp == "REP"):                        
                         if (len_reg == 3 and registers[2] in register):
                             a = bin(0+1<<20)
                             instr += register[registers[1]] + register[registers[0]] + str(a[3::]) + register[registers[2]]
@@ -198,15 +205,24 @@ if (args > 2):
 
                     elif(instr_tmp == "BEQ" or instr_tmp == "B"):
                         if (len_reg == 1 and registers[0] in tags):
-                            a = bin(0+(1<<11))
+                            a = bin(0+(1<<6))
                             pc_next = int(tags[registers[0]])
                             imm = (pc_next - (pc+8))/4
+                            print(imm)
                             b = bin(imm+(1<<25))
-                            instr += a[3::] + b[3::]
+                            print(b)
+                            instr += "01111"+a[3::] + b[3::]
+                        else:
+                            sys.exit("It is the wrong instruction: %s" %instr_tmp)
+
+                    elif (instr_tmp == "SAP"):
+                        if (len_reg == 3 and registers[2] in register):
+                            a = bin(0+1<<25)
+                            instr += register[registers[1]] + register[registers[0]] + str(a[3::])
                         else:
                             sys.exit("It is the wrong instruction: %s" %instr_tmp)
                     result = tohex(int(instr,2),48)
-                    addr += "48'H"+result+"\n"
+                    addr += "48'H"+result+";\n"
                     file.write(addr)
                     pc += 4
             except Exception as e:
@@ -216,7 +232,7 @@ if (args > 2):
                 print(exc_obj)
                 print(e.message)
         
-        file.write("\t\t\tdefault: Instr <= 48'bx\n")
+        file.write("\t\t\tdefault: Instr <= 48'bx;\n")
         file.write("\t\tendcase\n")
         file.write("\tend\n")
         file.write("end\n")

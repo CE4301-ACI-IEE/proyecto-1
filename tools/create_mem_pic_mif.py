@@ -51,7 +51,7 @@ for i in range( d.shape[0] ):
     for j in range( d.shape[1] ):
         val = d[i][j]
         f.write( "\t%d\t:\t" % aux_addr )
-        f.write( "%s;\n" % tohex( val, WIDTH//4 ) )
+        f.write( "%s;\n" % tohex( int(val), WIDTH//4 ) )
         aux_addr += 1
 f.write( "END;" )
 f.close() # close file

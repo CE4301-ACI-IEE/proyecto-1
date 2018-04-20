@@ -1,24 +1,25 @@
 `timescale 1ns / 1ps
-module instruction_rom #( parameter SIZE = 32 )  
-( 
-	input bit CLK,
-	input bit Reset,
-	input logic [SIZE-1:0] Address, 
+module instruction_rom #( parameter SIZE = 32)
+(
+	input logic CLK,
+	input logic Reset,
+	input logic [SIZE-1:0] Address,
 	output logic [SIZE-1:0] Instr
- );
-
-always@( posedge CLK ) begin
+);
+always@(posedge CLK) begin
 	if( Reset ) Instr <= 48'bx;
 	else begin
-		case( Address / 32'd4 )
-			48'd0: Instr  <= 48'HE023C000000F;
-			48'd1: Instr  <= 48'HE14004000005;
-			48'd2: Instr  <= 48'HE2C004000064;
-			48'd3: Instr  <= 48'HEA4084000000;
-			48'd4: Instr  <= 48'HEC3086000000;			
+		case (Address/48'd4)
+			48'H000000000000: Instr <= 48'He83006000002;
+			48'H000000000001: Instr <= 48'He14084000001;
+			48'H000000000002: Instr <= 48'He83008000002;
+			48'H000000000003: Instr <= 48'He14084000001;
+			48'H000000000004: Instr <= 48'He8300a000002;
+			48'H000000000005: Instr <= 48'He02084000002;
+			48'H000000000006: Instr <= 48'He9300c000002;
+			48'H000000000007: Instr <= 48'He403c0fffff7;
 			default: Instr <= 48'bx;
 		endcase
 	end
 end
-
 endmodule
