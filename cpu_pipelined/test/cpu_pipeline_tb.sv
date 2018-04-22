@@ -26,8 +26,8 @@ module cpu_pipeline_tb;
 	
 	// Instantiate the Device Under Test (DUT)
 	cpu DUT(
-        .CLK( clk ),
-        //.MASTER_CLK( clk ),
+        //.CLK( clk ),
+        .MASTER_CLK( clk ),
         .Reset( reset ),
         .Instr( instr ),
         .ReadDataM( read_data ),
@@ -52,7 +52,7 @@ module cpu_pipeline_tb;
 
 	//Initialize clock
 	initial begin
-		clk = 1'b0;
+		clk = 1'b1;
 			forever begin
 			#5;
 			clk = ~clk;

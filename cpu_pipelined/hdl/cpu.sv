@@ -2,8 +2,8 @@
 
 // CPU module
 module cpu (
-	input logic CLK,
-	//input logic MASTER_CLK,
+	//input logic CLK,
+	input logic MASTER_CLK,
 	input logic Reset,
 	input logic [47:0] Instr, //Instruccion desde el instruction rom
 	input logic [47:0] ReadDataM, //Dato desde las memorias
@@ -19,6 +19,8 @@ module cpu (
 	//output logic [47:0] RD1, RD2, //for debug
 	//output logic [3:0] ALUFlags //for debug
 );
+
+logic CLK;
 
 // Condlogic wires
 logic cond_exE;
@@ -209,12 +211,12 @@ RegEM #(48)	reg_em(	.CLK(CLK), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .Me
 					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M), .CtrlE(CtrlE), .CtrlM(CtrlM));
 
 //Gate clock
-/*gate_clk gc(
+gate_clk gc(
 	.MASTER_CLK( MASTER_CLK ),
 	.WAIT_SIGNAL( CtrlM[6] ),
 	.HANDSHAKE( handshake ),
 	.CLK_CPU( CLK )
-);*/
+);
 
 //Memory access modules
 memory_access ma_KP(
@@ -244,7 +246,9 @@ RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToR
 					.WA3W(wa3W), .ALUOutW(alu_outW), .ReadDataW(read_data_W) );
 
 //Hazard Unit Logic //checked for 48 bits
-hazard hazard_unit( .RegWriteM(reg_writeM),
+hazard hazard_unit( 
+							.Reset( RESET ),
+							.RegWriteM(reg_writeM),
 							.RegWriteW(reg_writeW), 
 							.MemToRegE(mem_to_regE), 
 							.BranchTakenE(BranchTakenE), 

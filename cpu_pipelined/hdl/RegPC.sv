@@ -18,9 +18,9 @@ begin
     case (flags)
         3'b001: PCF_tmp <= PC;
         3'b010: begin PCF_tmp <= {SIZE{1'b0}}; condition = 1'b1; end
-        3'b011: begin PCF_tmp <= {SIZE{1'bx}}; condition = 1'b0; end
+        3'b011: begin PCF_tmp <= {SIZE{1'b0}}; condition = 1'b0; end
         3'b101: PCF_tmp <= PCF_tmp|PCF_tmp;
-        3'b111: begin PCF_tmp <= {SIZE{1'bx}}; condition = 1'b0; end
+        3'b111: begin PCF_tmp <= {SIZE{1'b0}}; condition = 1'b0; end
         3'b000: begin PCF_tmp <= {SIZE{1'b0}}; condition = 1'b1; end
         default: condition = 1'b1;
     endcase

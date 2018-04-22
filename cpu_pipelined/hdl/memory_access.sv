@@ -28,7 +28,7 @@ logic m_k_handshake;
 
 // Logics mem_pic
 logic [31:0] m_p_address;
-logic [15:0] m_p_read;
+logic [47:0] m_p_read;
 
 // Logics memory_controller kernel
 logic m_p_enable;
@@ -43,7 +43,7 @@ logic [2:0] _local_ctrl;
 logic [47:0] _local_read_output;
 
 mem_kernel rom_kernel (
-        .address( m_k_address ),
+        .address( m_k_address[3:0] ),
         .clock( CLK ),
         .data(  ),
         .wren( 1'b0 ),
@@ -51,7 +51,7 @@ mem_kernel rom_kernel (
 );
 
 mem_pic rom_pic (
-        .address( m_p_address ),
+        .address( m_p_address[18:0] ),
         .clock( CLK ),
         .data(  ),
         .wren( 1'b0 ),
@@ -77,7 +77,7 @@ memory_controller mc_p(
         .ENABLE( m_p_enable ),
         .Ctrl( m_p_ctrl ),
         .ADDRESS( m_p_ADDRESS ),
-        .ReadMem( m_p_read ),
+        .ReadMem( m_p_read[15:0] ),
         .AddressMem(  m_p_address),
         .HANDSHAKE( m_p_handshake ),
         .READ( m_p_READ ),
@@ -129,7 +129,7 @@ always@(*) begin
             end
             else begin                
                                 _next_state = SS;
-                                _local_address = 32'bx;
+                                _read_address = 32'bx;
                                 _local_ctrl = 3'bx;
             end
                                 m_k_enable = 1'b0;

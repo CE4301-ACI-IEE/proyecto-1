@@ -20,6 +20,7 @@ initial begin
         rf[i] = 48'b0;
     end 
 end
+
 always@(posedge CLK) begin
 	if( WE3 ) rf[RA3] <= WD3;
 end
