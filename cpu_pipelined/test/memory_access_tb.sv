@@ -7,11 +7,10 @@ module memory_access_tb;
 
 	// Inputs
 	logic clk;
-    logic clk_mem;
     logic reset;
     logic enable;
     logic [2:0] ctrl;
-    logic [31:0] address_input;
+    logic [47:0] address_input;
 
 	//Outputs
     logic [47:0] read_output;
@@ -20,7 +19,6 @@ module memory_access_tb;
 	// Instantiate the Device Under Test (DUT)
 	memory_access DUT(
         .CLK( clk ),
-        .CLK_MEM(  clk_mem),
         .RESET( reset ),
         .ENABLE( enable ),
         .CTRL( ctrl ),
@@ -39,18 +37,12 @@ module memory_access_tb;
 	end
 	
 	//Stimulus 
-	clk_div ck(
-        .RESET( reset ),
-        .MASTER_CLK( clk ),
-        .CLK_MEM( clk_mem ),
-        .CLK_CPU(  )
-    );
 	initial begin
         $display("MEMORY ACCESS MODULE TESTBENCH");
 		// Initialize Inputs
         enable = 1'b0;
         ctrl = 3'b000;
-        address_input = 32'H0;
+        address_input = 48'H0;
         reset = 1'b1;
 		
 		// Wait 40 ns for global reset to finish
@@ -59,18 +51,18 @@ module memory_access_tb;
 		// Add stimulus here
         reset = 1'b0;
         ctrl = 3'b100;
-        address_input = 32'H00010002;
+        address_input = 48'H00000002;
         #20;
 
         enable = 1'b1; // Last operation is completed in 7 cycles.
-        #20; // Wait 2 cycles
-        ctrl = 3'bx;
-        address_input = 32'Hx;
+        #40; // Wait 2 cycles
+        //ctrl = 3'bx;
+        //address_input = 48'Hx;
         #50;
 
         $display("TEST 1: =");
         if( enable & handshake ) begin
-            if( read_output == 48'Hffffffffffff ) begin
+            if( read_output == 48'H000000000001 ) begin
                 $display("SINGULAR VALUE FROM KERNEL MEMORY: OK! (expected value:48'Hffffffffffff)");
             end
             else begin
@@ -81,13 +73,13 @@ module memory_access_tb;
         #40;
 
         enable = 1'b0;
-        address_input = 32'H00020001;
+        address_input = 48'H00020001;
         ctrl = 3'b110;
         #20;
 
         enable = 1'b1;
         #20;
-        address_input = 32'Hx;
+        address_input = 48'Hx;
         ctrl = 3'bx;
         #90;
         $display("TEST 2: =");
@@ -101,10 +93,12 @@ module memory_access_tb;
             enable = 1'b0;
         end
         
+        $stop;
         /*************************************************************************************************************/
+        /*
         #40;
         ctrl = 3'b101;
-        address_input = 32'H00010002;
+        address_input = 48'H00010002;
         
         #20;
         enable = 1'b1; // Last operation is completed in 7 cycles.
@@ -120,13 +114,13 @@ module memory_access_tb;
             enable = 1'b0;
         end
         
-        address_input = 32'H00020001;
+        address_input = 48'H00020001;
         ctrl = 3'b111;
         #20;
 
         enable = 1'b1;
         #20;
-        address_input = 32'Hx;
+        address_input = 48'Hx;
         ctrl = 3'bx;
         #90;
         $display("TEST 4: =");
@@ -139,7 +133,7 @@ module memory_access_tb;
             end
             enable = 1'b0;
         end
-
+        */
 	end
 	
 endmodule

@@ -6,7 +6,7 @@ module conv_index_to_mem_tb;
 	// Inputs
 	logic clk;
     logic reset;
-    logic size_image;
+    logic [1:0] size_image_src;
     logic [31:0] index_address;
 
 	//Outputs
@@ -16,7 +16,7 @@ module conv_index_to_mem_tb;
 	conv_index_to_mem DUT(
         .CLK( clk ),
         .RESET( reset ),
-        .SIZE_IMAGE( 1'b0 ),
+        .SIZE_IMAGE_SRC( size_image_src ),
         .INDEX_ADDRESS( index_address ),
         .MEM_ADDRESS( mem_address )
     );
@@ -35,7 +35,8 @@ module conv_index_to_mem_tb;
 	initial begin
 		// Initialize Inputs
 		reset = 1'b1;
-        index_address = 32'H00020001;
+        index_address = 32'H00000002;
+		size_image_src = 2'b10;
 
 		// Wait 20 ns for global reset to finish
 		#20;
@@ -43,7 +44,16 @@ module conv_index_to_mem_tb;
 		// Add stimulus here
         reset = 1'b0;
 
-        #100;
+        #40;
+		index_address = 32'H01000002;
+
+		#40;
+		index_address = 32'H00000100;
+
+		#40;
+		index_address = 32'H00000001;
+
+		#40;
         $stop;
 
 	end

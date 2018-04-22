@@ -22,20 +22,29 @@ initial begin
 end
 
 initial begin
-    
+    forever begin
+        #10;
+        if( reset ) PC = PCF;
+        else if( stallf ) PC = PC;
+        else PC = PC + 32'd4;
+    end
 end
 
 initial begin
-    PC = 32'b0;
     reset = 1'b1;
     stallf = 1'b1;
     #20
     reset = 1'b0;
     stallf = 1'b0;
-    forever begin
-        #10
-        PC = PC+32'd4;        
-    end
+
+    #40;
+    stallf = 1'b1;
+
+    #40;
+    stallf = 1'b0;
+
+    #100;
+    $stop;
 end
 
 endmodule
