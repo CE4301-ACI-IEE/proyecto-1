@@ -1,0 +1,205 @@
+\documentclass[a4paper,landscape]{article}
+
+
+\setlength{\textheight}{24cm}
+
+\setlength{\textwidth}{16cm}
+
+\setlength{\oddsidemargin}{0.2cm}
+
+\setlength{\topmargin}{-2cm}
+
+\setlength{\columnsep}{2cm}
+\usepackage{kbordermatrix}% http://www.hss.caltech.edu/~kcb/LaTeX.shtml
+\newcommand{\noindex}{\hspace*{-0.8em}}
+\parskip=5mm
+
+%\usepackage{helvet}
+%\renewcommand{\familydefault}{\sfdefault}
+\linespread{1.5}
+
+\evensidemargin=0.3cm
+\usepackage{fancyhdr}
+\usepackage{stackengine}
+\parindent=0mm
+\usepackage[spanish,activeacute,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float} % for [H] location specifier
+\usepackage{multirow}
+\usepackage{pgfplots}
+\pgfplotsset{width=12cm,compat=1.9}
+% packages for mathematics
+\usepackage{amsmath}
+\usepackage{lipsum}
+%\pagestyle{fancy}
+%\fancyhf{}
+\usepackage{adjustbox}
+\usepackage{amsmath}
+\usepackage[document]{ragged2e}
+\usepackage{amssymb}
+%\rhead{}
+%\fancyhead[LE,RO]{Tarea 4 - EARS}
+%\fancyhead[RE,LO]{Isaac Núñez Araya}
+% packages for pdf hyperlinks
+\usepackage[pdftex,pdftitle={Isaac Nunez Araya - Examen 1},hidelinks]{hyperref}
+% packages for drawing circuits
+\usepackage[binary-units=true]{siunitx}
+\usepackage[american,cuteinductors]{circuitikz}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.multipart, arrows, shadows, backgrounds, fit}
+
+\sisetup{per-mode=symbol,per-symbol = p}
+\newcommand\textbox[1]{%
+	\parbox{.333\textwidth}{#1}%
+}
+
+\tikzset{
+	bluebox/.style={
+		draw,
+		rectangle,
+		minimum height=4.5cm,
+		fill=blue!50!white,
+		align=center,
+		inner sep=2ex
+	},
+	whitebox/.style={
+		draw,
+		rectangle,
+		minimum height=1cm,
+		fill=white,
+		align=center,
+		inner sep=2ex
+	},
+	item/.style={
+		draw,
+		inner sep=1ex,
+		fill=white 
+	},
+	matrix/.style={
+		draw,
+		fill=white,
+		text centered,
+		minimum height=1em,
+		drop shadow
+	}
+}
+\begin{document}
+	\def\stackalignment{l}
+	 \textbf{\Large SULLIVAN48  } {\large Reference Data}
+	\begin{table}[H]
+		\begin{tabular}{ll}
+		\begin{adjustbox}{max width=0.8\textwidth}
+		\begin{tabular}{lcclc}\hline
+			\multicolumn{2}{l}{Name, Mnemonic}&$\stackrel{For-}{mat}$&Operation (in SystemVerilog)& Funct \\\hline
+			Add & \texttt{ADD} & D & R[rd] = R[rs] + R[rt] & 001000 \\
+			Add immediate & \texttt{ADDI} & DI & R[rd] = R[rs] + SignExtImm \hfill (1) & 101000 \\
+			Subtract & \texttt{SUB} & D & R[rd] = R[rs] - R[rt] & 000100 \\
+			Subtract immediate & \texttt{SUBI} & DI & R[rd] = R[rs] - SignExtImm \hfill (1)& 100100 \\
+			Multiply & \texttt{MUL} & D & R[rd] = R[rs]$\times$R[rt] & 000010 \\
+			Multiply immediate & \texttt{MULI}& DI & R[rd] = R[rs]$\times$SignExtImm \hfill (1)& 100010 \\
+			Compare & \texttt{CMP} & D & R[rs] - R[rt] $\stackrel{?}{=}$ 0 & 011111\\
+			Compare immediate & \texttt{CMPI} & DI & R[rs] - SignExtImm $\stackrel{?}{=}$ 0 \hfill (1) & 111111\\
+			
+			&&&R\{rd[47:32]\} = R\{rs[47:32]\} + R\{rt[47:32]\}& \\
+			Vectorial sum &\texttt{VES}&D&R\{rd[31:16]\} = R\{rs[31:16]\} + R\{rt[31:16]\}& 000000 \\
+			&&&R\{rd[15:0]\} = R\{rs[15:0]\} + R\{rt[15:0]\}& \\
+			
+			Concatenation & \texttt{CNC} & D & R[rd] = ConcatRegister \hfill (2)& 000110 \\
+			
+			&&&R\{rd[47:32]\} = R\{rs[47:32]\}$\times$ R[rt]& \\
+			Escalated vector &\texttt{SCL}&D&R\{rd[31:16]\} = R\{rs[31:16]\} $\times$  R[rt]& 011000 \\
+			&&&R\{rd[15:0]\}$~$ = R\{rs[15:0]\} $\times$  R[rt]& \\
+			
+			&&&R[rd] = R\{rs[47:32]\}$\times$R\{rt[47:32]\}& \\
+			Dot Product &\texttt{DOT}&D&\hspace{0.7cm}+ R\{rs[31:16]\} $\times$   R\{rt[31:16]\}& 011010 \\
+			&&&\hspace{0.7cm}+ R\{rs[15:0]\} $~\times$  R\{rt[15:0]\}& \\
+			
+			$\stackanchor{\text{Read value from}}{\text{kernel memory}}$& \texttt{REK} & D & R[rd] = M[ConcatRegister] \hfill (2)& 000110 \\
+			\stackanchor{Read vector from}{kernel memory} & \texttt{RKM} & D & \stackanchor{\stackanchor{R\{rd[47:32]\} = M\{ConcatRegister\}[47:32]}{R\{rd[31:16]\} = M\{ConcatRegister\}[31:16]}}{R\{rd[15:0]\} = M\{ConcatRegister\}[15:0]} \hfill (2)& 100110 \\
+			
+			\stackanchor{Reads pixel vector}{from picture ROM} & \texttt{REP} & D & R[rd] = M[ConcatRegister] \hfill (2)& 000110 \\
+			
+			\stackanchor{Saves new pixel}{in picture RAM} & \texttt{SAP} & D & M[R[rd]] = R[rs] & 001000 \\
+			
+			Branch & \texttt{B} & C & PC = PC + 8 + BranchAddr  \hfill (3)& 000000\\
+			Branch on equal & \texttt{BEQ} & C & PC = (Z $\stackrel{?}{=}$ 0)? PC + 8 + BranchAddr : PC \hfill (3)& 100000\\\hline
+		\end{tabular}
+	\end{adjustbox}
+	& \begin{adjustbox}{max width=0.8\textwidth}
+		\begin{tikzpicture}[font=\sffamily,
+			every node/.style={align=center, minimum height=1em, minimum width=1.5cm,node distance=0pt},
+			background rectangle/.style={fill=black!10}
+			]
+			
+			\node[whitebox, label={40 \hspace{0.5cm}35}] at (0,5) (Stage3) {{Funct}};
+			
+			\node[whitebox, right=of Stage3,label={34 \hspace{0.4cm}30}] (Stage4) {{Rs}};
+			\node[whitebox, right=of Stage4,label={29 \hspace{0.4cm}25}] (Stage5) {{Rd}};
+			\node[whitebox, text width=80mm, right=of Stage5,label={24 \hspace{7.9cm}5}] (Stage6) {{zero}};
+			\node[whitebox, right=of Stage6,label={4 \hspace{0.65cm}0}] (Stage7) {{Rt}};
+			% Stage 2
+			\node[whitebox, left=of Stage3, label={43\hspace{0.5cm}41}] (Stage2) {{Op}};
+			
+			% Stage 1
+			\node[whitebox, left=of Stage2, label={47\hspace{0.5cm} 44}] (Stage1) {{Cond}};
+			\node[left=of Stage1] at (-4,5) (Stage0) {{D = }};
+			
+			\node[left=of Stage1] at (0,7) (Stage) {{\textbf{Basic Instruction Formats} }};
+			
+			\draw(Stage);
+			\draw(Stage0)  (Stage1);
+			\draw(Stage1) -- (Stage2);
+			\draw(Stage2) -- (Stage3);
+			\draw(Stage3) -- (Stage4);
+			\draw(Stage4) -- (Stage5);
+			\draw(Stage5) -- (Stage6);
+			\draw(Stage6) -- (Stage7);
+			
+			\node[whitebox, label={40 \hspace{0.5cm}35}] at (0,3) (Stage13) {{Funct}};
+			
+			\node[whitebox, right=of Stage13,label={34 \hspace{0.4cm}30}] (Stage14) {{Rs}};
+			\node[whitebox, right=of Stage14,label={29 \hspace{0.4cm}25}] (Stage15) {{Rd}};
+			\node[whitebox, text width=40mm, right=of Stage15,label={24 \hspace{3.6cm}12}] (Stage16) {{zero}};
+			\node[whitebox, text width=49mm,right=of Stage16,label={11 \hspace{4.8cm}0}] (Stage17) {{Immediate}};
+			% Stage 2
+			\node[whitebox, left=of Stage13, label={43\hspace{0.5cm}41}]  (Stage12) {{Op}};
+			
+			% Stage 1
+			\node[whitebox, left=of Stage12, label={47\hspace{0.5cm} 44}] (Stage11) {{Cond}};
+			\node[left=of Stage11] at (-4,3) (Stage10) {{DI = }};
+			
+			\draw(Stage10)  (Stage11);
+			\draw(Stage11) -- (Stage12);
+			\draw(Stage12) -- (Stage13);
+			\draw(Stage13) -- (Stage14);
+			\draw(Stage14) -- (Stage15);
+			\draw(Stage15) -- (Stage16);
+			\draw(Stage16) -- (Stage17);
+			
+			\node[whitebox, label={40 \hspace{0.5cm}35}] at (0,1) (Stage113) {{Funct}};
+			
+			\node[whitebox, text width=30mm, right=of Stage113,label={34 \hspace{2.6cm}24}] (Stage116) {{zero}};
+			\node[whitebox, text width=90mm,right=of Stage116,label={23 \hspace{8.8cm}0}] (Stage117) {{Immediate}};
+			% Stage 2
+			\node[whitebox, left=of Stage113, label={43\hspace{0.5cm}41}]  (Stage112) {{Op}};
+			
+			% Stage 1
+			\node[whitebox, left=of Stage112, label={47\hspace{0.5cm} 44}] (Stage111) {{Cond}};
+			\node[left=of Stage11] at (-4,1) (Stage110) {{C = }};
+			
+			\draw(Stage110)  (Stage111);
+			\draw(Stage111) -- (Stage112);
+			\draw(Stage112) -- (Stage113);
+			\draw(Stage113) -- (Stage116);
+			\draw(Stage116) -- (Stage117);
+		\end{tikzpicture}
+		
+	  \end{adjustbox}  \\
+	(1) SignExtImm = \{36\{Immediate[11]\},Immediate[11:0]\} & \\
+	(2) ConcatRegister = \{16'b0,R[rs](15:0),R[rt](15:0)\} & \\
+	(3) BranchAddr = \{22\{Immediate[23]\},Immediate[23:0],2'b0\}
+	\end{tabular}
+	\end{table}
+	
+\end{document}

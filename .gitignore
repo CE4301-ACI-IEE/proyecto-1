@@ -15,3 +15,9 @@ cpu_pipelined/hdl/mem_kernel1.sv
 .vscode/*
 sd/*
 SD-Card/*
+cpu_pipelined/doc/green_card_sullivan48.aux
+cpu_pipelined/doc/green_card_sullivan48.log
+cpu_pipelined/doc/green_card_sullivan48.out
+cpu_pipelined/doc/green_card_sullivan48.synctex.gz
+cpu_pipelined/doc/green_card_sullivan48.pdf
+
