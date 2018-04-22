@@ -10,7 +10,6 @@ module cpu (
 	output logic MemWriteM, //Enable de la memoria datos
 	output logic [47:0] ALUOutM, //Adrres para memory controller
 	output logic [47:0] WriteDataM,
-	output logic [2:0] MemoryControl, //Controlar el memory controller 
 	output logic [47:0]PCF,
 	output logic [47:0]iD,
 	output logic [6:0] Ctrl_D,Ctrl_E,Ctrl_M
@@ -21,6 +20,7 @@ module cpu (
 );
 
 logic CLK;
+logic handshake;
 
 // Condlogic wires
 logic cond_exE;
@@ -220,8 +220,7 @@ gate_clk gc(
 
 //Memory access modules
 memory_access ma_KP(
-        .CLK( CLK ),
-        .CLK_MEM( 1'b1  ),
+        .CLK( MASTER_CLK ),
         .RESET( Reset ),
         .ENABLE( CtrlM[1] ),
         .CTRL( CtrlM[4:2] ),
@@ -247,7 +246,7 @@ RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToR
 
 //Hazard Unit Logic //checked for 48 bits
 hazard hazard_unit( 
-							.Reset( RESET ),
+							.Reset( Reset ),
 							.RegWriteM(reg_writeM),
 							.RegWriteW(reg_writeW), 
 							.MemToRegE(mem_to_regE), 
@@ -269,7 +268,7 @@ hazard hazard_unit(
 							.FlushE(flushE),
 							.FowardAE(forwardAE), 
 							.FowardBE(forwardBE),
-							.match()	);							
+							.CLK(CLK)	);							
 							
 //Salidas CPU
 							

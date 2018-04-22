@@ -6,7 +6,6 @@
 module memory_access
 (
     input logic CLK,
-    input logic CLK_MEM,
     input logic RESET,
     input logic ENABLE,
     input logic [2:0] CTRL,
@@ -37,8 +36,9 @@ logic [31:0] m_p_ADDRESS;
 logic [47:0] m_p_READ;
 logic m_p_handshake;
 
+logic [1:0] _size_img_src_kernel;
+logic [1:0] _size_img_src_pic;
 logic [31:0] _read_address;
-logic [31:0] _local_address;
 logic [2:0] _local_ctrl;
 logic [47:0] _local_read_output;
 
@@ -50,6 +50,7 @@ mem_kernel rom_kernel (
         .q( m_k_read )
 );
 
+/*
 mem_pic rom_pic (
         .address( m_p_address[18:0] ),
         .clock( CLK ),
@@ -57,21 +58,22 @@ mem_pic rom_pic (
         .wren( 1'b0 ),
         .q( m_p_read )
 );
+*/
 
 memory_controller mc_k (
         .CLK( CLK ),
-        .CLK_MEM( CLK_MEM ),
+        .RESET( RESET ),
         .ENABLE( m_k_enable ),
         .Ctrl( m_k_ctrl ),
-        .ADDRESS( m_k_ADDRESS ),
+        .IndexCtrl( _size_img_src_kernel ),
+        .ADDRESS( _read_address ),
         .ReadMem( m_k_read ),
         .AddressMem( m_k_address ),
         .HANDSHAKE( m_k_handshake ),
-        .READ( m_k_READ ),
-        ._state_(  ) // For debugging
+        .READ( m_k_READ )
     );
 
-memory_controller mc_p(
+/*memory_controller mc_p(
         .CLK( CLK ),
         .CLK_MEM( CLK_MEM ),
         .ENABLE( m_p_enable ),
@@ -80,26 +82,24 @@ memory_controller mc_p(
         .ReadMem( m_p_read[15:0] ),
         .AddressMem(  m_p_address),
         .HANDSHAKE( m_p_handshake ),
-        .READ( m_p_READ ),
-        ._state_(  ) // For debugging
+        .READ( m_p_READ )
     );
+*/
 
-conv_index_to_mem index_converter(
+/*
+conv_index_to_mem picIndexConverter(
     .CLK( CLK ),
     .RESET( RESET ),
-    .SIZE_IMAGE( 1'b0 ),
+    .SIZE_IMAGE_SRC( _size_img_src_pic ),
     .INDEX_ADDRESS( _read_address ),
-    .MEM_ADDRESS( _local_address )
-);
+    .MEM_ADDRESS( m_p_ADDRESS )
+);*/
 
 assign m_k_ctrl[0] = _local_ctrl[1];
 assign m_k_ctrl[1] = _local_ctrl[2];
 
 assign m_p_ctrl[0] = _local_ctrl[1];
 assign m_p_ctrl[1] = _local_ctrl[2];
-
-assign m_k_ADDRESS = _local_address;
-assign m_p_ADDRESS = _local_address;
 
 logic [15:0] _state;
 logic [15:0] _next_state;
@@ -110,15 +110,22 @@ parameter   SS = 00,
             S_DONE = 30;
 
 always_ff@( posedge CLK ) begin
-    if( ~ENABLE ) begin
+    if( RESET ) begin
         _state <= SS;
+        _size_img_src_kernel <= 2'b10;
+        _size_img_src_pic <= 2'b00;
     end
     else begin
-        _state <= _next_state;
+       if( ~ENABLE ) begin
+            _state <= SS;
+        end
+        else begin
+            _state <= _next_state;
+        end 
     end
 end
 
-always@(*) begin
+always_ff@( posedge CLK ) begin
     case( _state )
 
         SS: begin
@@ -165,33 +172,31 @@ always@(*) begin
 end
 
 always_ff@( posedge CLK ) begin
-    if( CLK_MEM ) begin
-        case( _state )
+    case( _state )
 
-            SS: begin
-                READ <= 48'bx;
-                HANDSHAKE <= 1'b0;
-            end
+        SS: begin
+            READ = 48'bx;
+            HANDSHAKE = 1'b0;
+        end
 
-            S0: begin
-            end
+        S0: begin
+        end
 
-            S10: begin
-                READ <= m_k_READ;
-                HANDSHAKE <= m_k_handshake;
-            end
+        S10: begin
+            READ = m_k_READ;
+            HANDSHAKE = m_k_handshake;
+        end
 
-            S20: begin
-                READ <= m_p_READ;
-                HANDSHAKE <= m_p_handshake;
-            end
+        S20: begin
+            READ = m_p_READ;
+            HANDSHAKE = m_p_handshake;
+        end
 
-            S_DONE: begin
-                //HANDSHAKE <= 1'b1;
-            end
+        S_DONE: begin
+            //HANDSHAKE = 1'b1;
+        end
 
-        endcase
-    end
+    endcase
 end
 
 endmodule

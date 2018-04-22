@@ -14,7 +14,7 @@ module regfile #(
     output logic [SIZE-1:0] RD2
 );
 
-logic [SIZE-1:0] rf[4:0];
+logic [SIZE-1:0] rf[AMOUNT_REG-1:0];
 initial begin
     for (int i=0; i<32; i++) begin
         rf[i] = 48'b0;

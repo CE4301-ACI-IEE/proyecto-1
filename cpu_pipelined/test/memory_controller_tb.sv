@@ -3,37 +3,32 @@
 // Memory controller module testbench
 module memory_controller_tb;
 
-    // Parameters
-    parameter SIZE_ADDR = 32;
-    parameter SIZE_READ = 16;
-    parameter SIZE = 48;
-
 	// Inputs
-	logic clk;
-    logic clk_mem;
+    logic clk;
+    logic reset;
     logic enable;
     logic [1:0] ctrl;
-    logic [31:0] alu_address; // Or 48 bits, whatever
-    logic [SIZE_READ-1:0] read_mem;
+    logic [1:0] index_ctrl;
+    logic [47:0] address_controller;
+    logic [15:0] read_mem;
 
 	//Outputs
-    logic [SIZE_ADDR-1:0] address_mem;
+    logic [31:0] addr_mem;
     logic handshake;
-    logic [SIZE-1:0] read_data;
-    logic [SIZE-1:0] _state_;
-	
+    logic [47:0] read_controller; 
+
 	// Instantiate the Device Under Test (DUT)
 	memory_controller DUT (
         .CLK( clk ),
-        .CLK_MEM( clk_mem ),
+        .RESET( reset ),
         .ENABLE( enable ),
         .Ctrl( ctrl ),
-        .ADDRESS( alu_address ),
+        .IndexCtrl( index_ctrl ),
+        .ADDRESS( address_controller ),
         .ReadMem( read_mem ),
-        .AddressMem( address_mem ),
+        .AddressMem( addr_mem ),
         .HANDSHAKE( handshake ),
-        .READ( read_data ),
-        ._state_( _state_ ) // For debugging
+        .READ( read_controller )
     );
 
 	//Initialize clock
@@ -46,23 +41,20 @@ module memory_controller_tb;
 	end
 	
 	//Stimulus 
-    logic reset;
-    clk_div clk_div_1(
-        .RESET( reset ),
-        .MASTER_CLK( clk ),
-        .CLK_MEM( clk_mem ),
-        .CLK_CPU(  )
-    );
     mem_kernel mk(
-        .CLK( clk ),
-		.ADDRESS( address_mem ),
-		.READ( read_mem )
+        .address( addr_mem[3:0] ),
+        .clock( clk ),
+        .data(  ),
+        .wren( 1'b0 ),
+        .q( read_mem )
     );
 	initial begin
         $display("MEMORY CONTROLLER TESTBENCH");
 		// Initialize Inputs
+        index_ctrl = 2'b10;
         enable = 1'b0;
         ctrl = 2'bxx;
+        address_controller = 32'bx;
         reset = 1'b1;
 
 		// Wait 20 ns for global reset to finish
@@ -71,50 +63,51 @@ module memory_controller_tb;
 		// Add stimulus here
         reset = 1'b0;
         enable = 1'b0;
-        
-        #20;
+        #20; // wait 20 ns
+
         enable = 1'b1;
         ctrl = 2'b10;
-        alu_address = 32'H00010002;
-        
+        address_controller = 32'H00000002;
         #20; // wait 2 cycles // It is expected that this cycles do not generate error
-        alu_address = 32'Hx; // Error data. // Without error
+        address_controller = 32'Hx; // Error data. // Without error
         #30; // wait 3 cycles
-        $display("SINGULAR VALUE IN DIR: 32'H00010002");
-        if( read_data == 48'Hffffffffffff ) begin
-            $display("SINGULAR VALUE: OK! (expected value:48'Hffffffffffff)");
+        $display("SINGULAR VALUE IN DIR: 32'H00000002");
+        if( read_controller == 48'H000000000001 ) begin
+            $display("SINGULAR VALUE: OK! (expected value:48'H000000000001)");
             enable = 0;
         end
         else
             $display("SINGULAR VALUE: FAILED...");
-        #10; // wait 2 cycles
-
+        #50; // wait 5 cycles
+        
         enable = 1'b0;
-        alu_address = 32'H00020002;
+        address_controller = 32'H00020002;
         ctrl = 2'b00;
 
         #40; // wait 4 cycles
         enable = 1'b1; 
-        alu_address = 32'H00020001;
-        ctrl = 2'b11;
+        address_controller = 32'H00000000;
+        ctrl = 2'b01;
 
         #60;
-        alu_address = 32'Hx;
-        ctrl = 2'bx;
+        //address_controller = 32'Hx;
+        //ctrl = 2'bx;
         #30;
         $display("MULTIPLE VALUES IN DIR: 32'H00020001, VERTICAL");
-        if( read_data == 48'H00000000ffff ) begin
+        if( read_mem == 48'H00000000ffff ) begin
             $display("MULTIPLE VALUES: OK! (expected value:48'H00000000ffff)");
             enable = 0;
         end
         else
             $display("MULTIPLE VALUES: FAILED...");
 
-        alu_address = 32'H0;
+        #100;
+        $stop;
+        /*address_controller = 32'H0;
         ctrl = 2'b0;
         #40; // wait 4 cycles               
-        $stop;
-
+        $stop;*/
+        
 	end
 	
 endmodule

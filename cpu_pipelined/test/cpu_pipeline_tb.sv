@@ -35,7 +35,7 @@ module cpu_pipeline_tb;
         .PCF( pc ),
         .ALUOutM( addr_data ),
         .WriteDataM( write_data ),
-        .MemoryControl(),
+        //.MemoryControl(),
         .iD(instrD),
         .Ctrl_D(CtrlD),
         .Ctrl_E(CtrlE),

@@ -2,7 +2,7 @@
 
 module hazard 
 (
-    input   logic       RegWriteM, RegWriteW, MemToRegE, BranchTakenE, PCSrcD, PCSrcE, PCSrcM, PCSrcW,Reset,
+    input   logic       RegWriteM, RegWriteW, MemToRegE, BranchTakenE, PCSrcD, PCSrcE, PCSrcM, PCSrcW,Reset,CLK,
     input   logic [4:0] RA1D, RA2D, RA1E, RA2E, WA3M, WA3W, WA3E,
     output  logic       StallF, StallD, FlushD, FlushE,
     output  logic [1:0] FowardAE, FowardBE,
@@ -25,7 +25,7 @@ initial begin
     Match = 4'b0;
     PCWrPendingF = 1'b0;
 end
-    always@(*)
+    always@(negedge CLK)
     begin
         Match[3] = (RA1E == WA3M);
         Match[2] = (RA1E == WA3W);
@@ -51,23 +51,16 @@ end
         end
     end
 
-    always@(*)
+    always@(posedge CLK)
     begin
-        if(~Reset) begin
+        
             PCWrPendingF    =   PCSrcD | PCSrcE | PCSrcM;
             LDRStall        =   ((RA1D == WA3E)|(RA2D==WA3E))&MemToRegE;
             StallD_tmp      =   LDRStall; 
             StallF_tmp      =   LDRStall | PCWrPendingF;
             FlushE_tmp      =   LDRStall | BranchTakenE;
             FlushD_tmp      =   PCWrPendingF | PCSrcW | BranchTakenE;
-        end else begin
-            PCWrPendingF    =   1'b0;
-            LDRStall        =   1'b0;
-            StallD_tmp      =   1'b0;
-            StallF_tmp      =   1'b0;
-            FlushE_tmp      =   1'b0;
-            FlushD_tmp      =   1'b0;
-        end
+        
     end
     
 endmodule

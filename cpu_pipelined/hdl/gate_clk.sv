@@ -7,9 +7,9 @@ module gate_clk (
 
 logic tmp;
 
-always_ff@( HANDSHAKE or WAIT_SIGNAL or MASTER_CLK ) begin
+always_ff@( posedge HANDSHAKE or posedge WAIT_SIGNAL or posedge MASTER_CLK ) begin
     tmp = 1'b1;
-    if( WAIT_SIGNAL ) begin
+    if( WAIT_SIGNAL) begin
         if( ~HANDSHAKE ) begin
             tmp = 1'b0;
         end
