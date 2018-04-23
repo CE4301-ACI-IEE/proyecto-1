@@ -1,0 +1,111 @@
+\documentclass[a4paper]{IEEEtran}
+
+
+\setlength{\textheight}{24cm}
+
+\setlength{\textwidth}{16cm}
+
+\setlength{\oddsidemargin}{0.2cm}
+
+\setlength{\topmargin}{-2cm}
+
+\setlength{\columnsep}{2cm}
+\usepackage{kbordermatrix}% http://www.hss.caltech.edu/~kcb/LaTeX.shtml
+\newcommand{\noindex}{\hspace*{-0.8em}}
+\parskip=5mm
+
+%\usepackage{helvet}\begin{equation}
+%\renewcommand{\familydefault}{\sfdefault}
+\linespread{1.5}
+
+\evensidemargin=0.3cm
+\usepackage{fancyhdr}
+\usepackage{stackengine}
+\parindent=0mm
+\usepackage[spanish,activeacute,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float} % for [H] location specifier
+\usepackage{multirow}
+\usepackage{pgfplots}
+\pgfplotsset{width=12cm,compat=1.9}
+% packages for mathematics
+\usepackage{amsmath}
+\usepackage{lipsum}
+%\pagestyle{fancy}
+%\fancyhf{}
+\usepackage{adjustbox}
+\usepackage{amsmath}
+\usepackage[document]{ragged2e}
+\usepackage{amssymb}
+%\rhead{}
+%\fancyhead[LE,RO]{Tarea 4 - EARS}
+%\fancyhead[RE,LO]{Isaac Núñez Araya}
+% packages for pdf hyperlinks
+\usepackage[pdftex,pdftitle={Isaac Nunez Araya - Examen 1},hidelinks]{hyperref}
+% packages for drawing circuits
+\usepackage[binary-units=true]{siunitx}
+\usepackage[american,cuteinductors]{circuitikz}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.multipart, arrows, shadows, backgrounds, fit}
+
+\sisetup{per-mode=symbol,per-symbol = p}
+\newcommand\textbox[1]{%
+	\parbox{.333\textwidth}{#1}%
+}
+
+\tikzset{
+	bluebox/.style={
+		draw,
+		rectangle,
+		minimum height=4.5cm,
+		fill=blue!50!white,
+		align=center,
+		inner sep=2ex
+	},
+	whitebox/.style={
+		draw,
+		rectangle,
+		minimum height=1cm,
+		fill=white,
+		align=center,
+		inner sep=2ex
+	},
+	item/.style={
+		draw,
+		inner sep=1ex,
+		fill=white 
+	},
+	matrix/.style={
+		draw,
+		fill=white,
+		text centered,
+		minimum height=1em,
+		drop shadow
+	}
+}
+\begin{document}
+\newcommand{\titlepaper}{Proyecto I: Sullivan48}%(cambiar por nombre)}
+\title{Proyecto I: Sullivan48}
+\renewcommand\IEEEkeywordsname{Palabras clave}
+% AUTHOR(S) INFORMATION
+
+\author{
+	\centering
+	\begin{tabular}[htbp!]{r l} 
+		Isaac~Núñez~Araya & Ernesto Ulate Ramírez\\
+		isaacnez@outlook.com & ernesto.ulate@gmail.com
+	\end{tabular} \\
+	Área de Ingeniería en Computadores \\
+	Instituto Tecnológico de Costa Rica
+}
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+\begin{abstract}
+	En este proyecto se busca desarrollar una arquitectura la cual tenga como propósito el procesamiento de imágenes mediante convolución (filtrado) en 2D directamente en microarquitectura.
+\end{abstract}
+\begin{IEEEkeywords}
+	Arquitectura, Convolución, Procesador vectorial
+\end{IEEEkeywords}
+\end{document}
