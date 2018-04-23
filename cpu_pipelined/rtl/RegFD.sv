@@ -13,11 +13,12 @@ module RegFD #(
 
 logic [SIZE-1:0] InstrD_temp;
 
-always_ff@(negedge CLK or posedge CLR)
+always@(negedge CLK or posedge CLR)
 begin
-	if(CLR) InstrD_temp <= {SIZE{1'b0}};
-	else if (StallD) InstrD_temp <= InstrD_temp;
-	else InstrD_temp <= InstrF;
+	//if(CLR) InstrD_temp <= {SIZE{1'b0}};
+	/*else*/ if (StallD) InstrD_temp <= InstrD_temp;
+	else if (~StallD) InstrD_temp <= InstrF;
+    else InstrD_temp <= {SIZE{1'b0}};
 end
 
 assign InstrD = InstrD_temp;

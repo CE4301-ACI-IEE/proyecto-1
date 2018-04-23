@@ -84,15 +84,14 @@ if (args > 1):
         i = 0 #index corresponding to actual PC
         for line in file:
             split_line = line.split(' ')
-            if (len(split_line)>2 and not split_line[1]=="DCD"):
-                tags[split_line[0]] = i
+            if (len(split_line)>=2 and not split_line[1]=="DCD"):
+                if(not split_line[0] in nemo):
+                    tags[split_line[0]] = i
                 i+=4
         
         #File operations for kernel rom
-        script_dir  = os.path.dirname(os.path.realpath('__file__'))
-        kernel_file = "../cpu_pipelined/rtl/mem_kernel.mif"
-        kernel_path = os.path.join(script_dir,kernel_file)
-        file_kernel = open(kernel_path, "w+")
+        kernel_file = "../rtl/mem_kernel.mif"
+        file_kernel = open(kernel_file, "w+")
         file_kernel.write("WIDTH=16;\n")
         file_kernel.write("DEPTH=9;\n")
         file_kernel.write("ADDRESS_RADIX=UNS;\n")
@@ -100,9 +99,8 @@ if (args > 1):
         file_kernel.write("CONTENT BEGIN\n")
         
         #File operations for instruction rom
-        instr_file = "../cpu_pipelined/rtl/instruction_rom.sv"
-        instr_path = os.path.join(script_dir,instr_file)
-        file = open(instr_path, "w+")
+        instr_file = "../rtl/instruction_rom.sv"
+        file = open(instr_file, "w+")
         file.write("`timescale 1ns / 1ps\n")
         file.write("module instruction_rom #( parameter SIZE = 32)\n")
         file.write("(\n")
@@ -240,6 +238,11 @@ if (args > 1):
         file.close()
 
     except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_tb.tb_lineno)
+        print(exc_obj)
+        print(e.message)
         print(e.message)
         sys.exit("There has been an error opening the instruction file.")
 else:

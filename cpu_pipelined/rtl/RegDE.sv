@@ -38,7 +38,7 @@ logic [1:0] Flags_tmp,FlagWriteD_tmp;
 logic [6:0] Ctrl_tmp;
 
 
-always@(negedge CLK or posedge CLR)//se debe cambiar por negedge
+always@(negedge CLK)//se debe cambiar por negedge
 begin
     if(CLR)
     begin

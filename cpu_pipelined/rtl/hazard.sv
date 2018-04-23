@@ -29,7 +29,7 @@ initial begin
     Match = 4'b0;
     PCWrPendingF = 1'b0;
 end
-    always@(*)
+    always@(negedge CLK)
     begin
         Match[3] = (RA1E == WA3M);
         Match[2] = (RA1E == WA3W);
