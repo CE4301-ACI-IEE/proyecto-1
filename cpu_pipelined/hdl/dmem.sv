@@ -9,6 +9,11 @@ module dmem #( parameter SIZE = 48 )
 
 	//(* ram_init_file = "mem_pic.mif" *) logic [SIZE-1:0] RAM[63:0];
 	logic [SIZE-1:0] RAM[0:63];
+	initial begin
+		for( int i=0; i < 64; i++ ) begin
+			RAM[i] = 0;
+		end
+	end
 
 	always @ (posedge CLK) begin
 		if (WE) RAM[ A/*[ SIZE-1:2 ]*/ ] <= WD; //word aligned
