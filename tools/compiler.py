@@ -216,7 +216,7 @@ if (args > 1):
                             sys.exit("It is the wrong instruction: %s" %instr_tmp)
 
                     elif (instr_tmp == "SAP"):
-                        if (len_reg == 3 and registers[2] in register):
+                        if (len_reg == 2 and registers[1] in register):
                             a = bin(0+1<<25)
                             instr += register[registers[1]] + register[registers[0]] + str(a[3::])
                         else:
