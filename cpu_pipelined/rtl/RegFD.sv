@@ -1,5 +1,8 @@
 `timescale 1ns / 1ps
-
+/**
+It releases the instruction to be decoded,
+if a stall is recieve the pipe won't go on.
+*/
 module RegFD #(
     parameter SIZE = 32
 )(

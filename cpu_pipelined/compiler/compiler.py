@@ -90,7 +90,7 @@ if (args > 1):
         
         #File operations for kernel rom
         script_dir  = os.path.dirname(os.path.realpath('__file__'))
-        kernel_file = "../cpu_pipelined/hdl/mem_kernel.mif"
+        kernel_file = "../cpu_pipelined/rtl/mem_kernel.mif"
         kernel_path = os.path.join(script_dir,kernel_file)
         file_kernel = open(kernel_path, "w+")
         file_kernel.write("WIDTH=16;\n")
@@ -100,7 +100,7 @@ if (args > 1):
         file_kernel.write("CONTENT BEGIN\n")
         
         #File operations for instruction rom
-        instr_file = "../cpu_pipelined/hdl/instruction_rom.sv"
+        instr_file = "../cpu_pipelined/rtl/instruction_rom.sv"
         instr_path = os.path.join(script_dir,instr_file)
         file = open(instr_path, "w+")
         file.write("`timescale 1ns / 1ps\n")

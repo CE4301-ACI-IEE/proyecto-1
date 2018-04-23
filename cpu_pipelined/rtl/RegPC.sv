@@ -1,4 +1,8 @@
 `timescale 1ns / 1ps
+/**
+It releases the next PC value to be used in the register file to fetch the instruction
+If an stall or reset is recieve, the pipe will froze or restart.
+*/
 module RegPC #(
     parameter SIZE = 32
 )(

@@ -1,4 +1,8 @@
 `timescale 1ns / 1ps
+/**
+Register File: it will contain all
+intermediate values used during the execution of the program.
+*/
 module regfile #( 
     parameter SIZE = 32,
     parameter AMOUNT_REG = 4 )

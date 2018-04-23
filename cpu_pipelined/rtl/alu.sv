@@ -1,4 +1,12 @@
 `timescale 1ns / 1ps
+/**
+This is an vectorial arithmetic unit
+It can perform the normal operation without considering logic ones, 
+but it can also treat register as vectors and do operations over them
+it can sum vector position, it can escalate a vector and generate a escalar
+using dot product. As well can create a vector concatenating two numbers into one
+register, this operation is useful in memory addressing.
+*/
 module ALU
 (	
 	input logic 		clk,

@@ -1,5 +1,11 @@
 `timescale 1ns / 1ps
-
+/**
+It is an stage register, it stores the previous value
+to be release in the next edge to all the stages are syncronized.
+It is located between decode and execute. It stores the previous value
+of control signals. If a flush is recieve, it will clean all the temporal
+register, this scenario is apply when facing a branch.
+*/
 module RegDE #(
     parameter SIZE = 32
 )(

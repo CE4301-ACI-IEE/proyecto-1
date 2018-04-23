@@ -31,7 +31,7 @@ else:
 
 # create mem_kernel.sv file
 this_file_dir = os.path.dirname(os.path.realpath('__file__'))   # Direction of this file
-output_file_dir = "../cpu_pipelined/hdl/mem_pic.mif"             # Direction of output file
+output_file_dir = "../cpu_pipelined/rtl/mem_pic.mif"             # Direction of output file
 path = os.path.join( this_file_dir, output_file_dir )           # Create a relative path
 f = open( path, "w+" )
 

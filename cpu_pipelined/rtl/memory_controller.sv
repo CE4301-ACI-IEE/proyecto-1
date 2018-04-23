@@ -111,7 +111,7 @@ always_ff@( posedge CLK ) begin
     case( _state )
 
         SS: begin
-            READ = 48'bx; // nothing to read
+            READ = 48'b0; // nothing to read
             HANDSHAKE = 1'b0; // handshake off
             _address_mem = _local_address; // set variable
         end

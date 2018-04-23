@@ -55,7 +55,7 @@ mem_kernel rom_kernel (
         .q( m_k_read )
 );
 
-/*
+
 // ROM of picture
 mem_pic rom_pic (
         .address( m_p_address[18:0] ),
@@ -64,7 +64,7 @@ mem_pic rom_pic (
         .wren( 1'b0 ),
         .q( m_p_read )
 );
-*/
+
 
 // Memory controller of kernel ROM
 memory_controller mc_k (
@@ -80,20 +80,20 @@ memory_controller mc_k (
         .READ( m_k_READ )
     );
 
-/*
+
 // Memory controller of picture ROM
 memory_controller mc_p(
         .CLK( CLK ),
-        .CLK_MEM( CLK_MEM ),
         .ENABLE( m_p_enable ),
         .Ctrl( m_p_ctrl ),
         .ADDRESS( m_p_ADDRESS ),
+        .IndexCtrl( _size_img_src_pic ),
         .ReadMem( m_p_read[15:0] ),
         .AddressMem(  m_p_address),
         .HANDSHAKE( m_p_handshake ),
         .READ( m_p_READ )
     );
-*/
+
 
 // Constant values
 assign m_k_ctrl[0] = _local_ctrl[1];
