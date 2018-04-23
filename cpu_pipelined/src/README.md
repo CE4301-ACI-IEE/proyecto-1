@@ -1,4 +1,4 @@
-# Descripción de convolution2D.txt#
+# Descripción de convolution2D.txt #
 
 Este documento se refiere al proceso seguido en `convolution2D.txt`, el cual corresponde al código ASM para la arquitectura Sullivan48.
 
