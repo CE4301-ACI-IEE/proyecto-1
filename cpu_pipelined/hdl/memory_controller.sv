@@ -1,6 +1,10 @@
+// Design By: Ernesto & Isaac
+
 `timescale 1ns / 1ps
 
 // Memory controller module
+// Module thats control the memories of kernel and picture
+// This is a prototype
 
 // input logic [1:0] Ctrl meaning:
     // if Ctrl[0] == 0 : is expected a singular value of the matrix
@@ -23,9 +27,11 @@ module memory_controller
     output logic [47:0] READ
 );
 
+// States
 parameter SS = 100, S0 = 00, S1 = 01, S2 = 02;
 parameter S11 = 11, S12 = 12, S13 = 13, S14 = 14, S15 = 15, S16 = 16;
 
+// Logic state machine
 logic [15:0] _state;
 logic [15:0] _next_state;
 
@@ -34,6 +40,7 @@ logic [31:0] _address_mem;
 logic [47:0] _read_tmp;
 logic [15:0] _val_aux;
 
+// convert the index in _address_mem to a memory address
 conv_index_to_mem kernelIndexConverter(
     .CLK( CLK ),
     .RESET( RESET ),
@@ -42,6 +49,7 @@ conv_index_to_mem kernelIndexConverter(
     .MEM_ADDRESS( AddressMem )
 );
 
+// change the actual state
 always_ff@( posedge CLK ) begin
     if( ~ENABLE )
         _state <= SS;
@@ -49,6 +57,7 @@ always_ff@( posedge CLK ) begin
         _state <= _next_state;
 end
 
+// state changes
 always_ff@( posedge CLK ) begin
     case( _state )
         
@@ -74,7 +83,7 @@ always_ff@( posedge CLK ) begin
 
         S2: begin
             if( _val_aux<0 ) _next_state = S2;
-            else            _next_state = SS; // FIX. Wait cycles (?)
+            else            _next_state = SS; // Wait cycles
         end
         
         S11:                _next_state = S12;
@@ -89,32 +98,41 @@ always_ff@( posedge CLK ) begin
         
         S16: begin
             if( _val_aux<1 )_next_state = S16;
-            else            _next_state = SS; // FIX. Wait cycles (?)
+            else            _next_state = SS; // Wait cycles
         end
     endcase
 end
 
+// set variables and excecute functions
+// in this case there are two main fuctions
+// 1 - extract 1 value of the memory by index
+// 2 - extract 3 values of the memory by index( only needs a start value )
 always_ff@( posedge CLK ) begin
     case( _state )
 
         SS: begin
-            READ = 48'bx;
-            HANDSHAKE = 1'b0;
-            _address_mem = _local_address;
+            READ = 48'bx; // nothing to read
+            HANDSHAKE = 1'b0; // handshake off
+            _address_mem = _local_address; // set variable
         end
 
-        S0: begin
+        S0: begin // set first address delay
             //_address_mem = _local_address;
-            _val_aux = 1'b0; // Possible wait flag
+            _val_aux = 1'b0; // initialize wait flag
         end
 
+        /***********************************************************/
+        // Only for 1 value
+        // Get 1 value of the memory
         S2: begin
-            READ = { {32{ReadMem[15]}}, ReadMem[15:0] };
-            _val_aux = _val_aux + 1'b1; // Possible wait flag
-            HANDSHAKE = 1'b1;
+            READ = { {32{ReadMem[15]}}, ReadMem[15:0] }; // set read value in output 
+            _val_aux = _val_aux + 1'b1; // increment wait flag
+            HANDSHAKE = 1'b1; // handshake on
         end
 
-        S11: begin
+        /************************************************************/
+        // Only for 3 values
+        S11: begin // set second address delay
             if( Ctrl[1] == 1'b0 ) begin
                 //_address_mem = { _local_address[31:16], _local_address[15:0] };
                 _val_aux = _local_address[15:0] + 1'b1;
@@ -127,7 +145,7 @@ always_ff@( posedge CLK ) begin
             end
         end
 
-        S12: begin
+        S12: begin // set third address delay and read first value
             if( Ctrl[1] == 1'b0 ) begin
                 _address_mem = { _local_address[31:16], _val_aux[15:0] };
                 _val_aux = _val_aux[15:0] + 1'b1;
@@ -139,7 +157,7 @@ always_ff@( posedge CLK ) begin
             _read_tmp[15:0] = ReadMem[15:0];
         end
 
-        S13: begin
+        S13: begin // reads second value
             if( Ctrl[1] == 1'b0 ) begin
                 //_address_mem = { _local_address[31:16], _val_aux[15:0] };
             end
@@ -152,17 +170,17 @@ always_ff@( posedge CLK ) begin
             _read_tmp[31:16] = ReadMem[15:0];
         end
 
-        S14: begin
+        S14: begin // reads third value
             //_read_tmp[31:16] = ReadMem[15:0];
             //_address_mem = 32'bx;
             _read_tmp[47:32] = ReadMem[15:0];
         end
 
-        S16: begin
+        S16: begin // delay
             //_read_tmp[47:32] = ReadMem[15:0];
         end
 
-        S15: begin
+        S15: begin // set concatenated value in output READ
             READ = _read_tmp;
             HANDSHAKE = 1'b1;
             _val_aux = _val_aux + 1'b1;

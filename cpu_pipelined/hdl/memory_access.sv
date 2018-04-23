@@ -1,8 +1,11 @@
 // Date: 04/11/18
+// By: Ernesto & Isaac
 
 `timescale 1ns / 1ps
 
 // Memory access controller module
+// Select the type of memory to read
+// and calls the respective memory controller
 module memory_access
 (
     input logic CLK,
@@ -36,12 +39,14 @@ logic [31:0] m_p_ADDRESS;
 logic [47:0] m_p_READ;
 logic m_p_handshake;
 
+// logic state machine
 logic [1:0] _size_img_src_kernel;
 logic [1:0] _size_img_src_pic;
 logic [31:0] _read_address;
 logic [2:0] _local_ctrl;
 logic [47:0] _local_read_output;
 
+// ROM of kernel
 mem_kernel rom_kernel (
         .address( m_k_address[3:0] ),
         .clock( CLK ),
@@ -51,6 +56,7 @@ mem_kernel rom_kernel (
 );
 
 /*
+// ROM of picture
 mem_pic rom_pic (
         .address( m_p_address[18:0] ),
         .clock( CLK ),
@@ -60,6 +66,7 @@ mem_pic rom_pic (
 );
 */
 
+// Memory controller of kernel ROM
 memory_controller mc_k (
         .CLK( CLK ),
         .RESET( RESET ),
@@ -73,7 +80,9 @@ memory_controller mc_k (
         .READ( m_k_READ )
     );
 
-/*memory_controller mc_p(
+/*
+// Memory controller of picture ROM
+memory_controller mc_p(
         .CLK( CLK ),
         .CLK_MEM( CLK_MEM ),
         .ENABLE( m_p_enable ),
@@ -86,15 +95,7 @@ memory_controller mc_k (
     );
 */
 
-/*
-conv_index_to_mem picIndexConverter(
-    .CLK( CLK ),
-    .RESET( RESET ),
-    .SIZE_IMAGE_SRC( _size_img_src_pic ),
-    .INDEX_ADDRESS( _read_address ),
-    .MEM_ADDRESS( m_p_ADDRESS )
-);*/
-
+// Constant values
 assign m_k_ctrl[0] = _local_ctrl[1];
 assign m_k_ctrl[1] = _local_ctrl[2];
 
@@ -109,6 +110,7 @@ parameter   SS = 00,
             S20 = 20,
             S_DONE = 30;
 
+// change the actual state
 always_ff@( posedge CLK ) begin
     if( RESET ) begin
         _state <= SS;
@@ -125,6 +127,7 @@ always_ff@( posedge CLK ) begin
     end
 end
 
+// logic next state and set constants
 always_ff@( posedge CLK ) begin
     case( _state )
 
@@ -171,28 +174,29 @@ always_ff@( posedge CLK ) begin
     endcase
 end
 
+// set variables and excecute functions
 always_ff@( negedge CLK ) begin
     case( _state )
 
-        SS: begin
+        SS: begin // waits enable signal
             READ = 48'bx;
             HANDSHAKE = 1'b0;
         end
 
-        S0: begin
+        S0: begin // delay
         end
 
-        S10: begin
+        S10: begin // delay in kernel memory controller until the value(s) is(are) readed
             READ = m_k_READ;
             HANDSHAKE = m_k_handshake;
         end
 
-        S20: begin
+        S20: begin // delay in picture memory controller until the value(s) is(are) readed
             READ = m_p_READ;
             HANDSHAKE = m_p_handshake;
         end
 
-        S_DONE: begin
+        S_DONE: begin // dealy, finish
             HANDSHAKE = 1'b0;
         end
 
