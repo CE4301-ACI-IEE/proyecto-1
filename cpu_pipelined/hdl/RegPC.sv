@@ -9,12 +9,9 @@ module RegPC #(
 
 logic [SIZE-1:0] PCF_tmp;
 
-logic [2:0] flags;
-logic condition;
-
 always@(negedge CLK) begin
     if( RESET ) begin
-        PCF_tmp <= 48'b0;
+        PCF_tmp <= 48'HFFFFFFFFFFFC;
     end
     else if( StallF ) begin
 		PCF_tmp <= PCF_tmp;

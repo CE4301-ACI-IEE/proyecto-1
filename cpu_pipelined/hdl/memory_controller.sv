@@ -73,7 +73,7 @@ always_ff@( posedge CLK ) begin
         end
 
         S2: begin
-            if( _val_aux<2 ) _next_state = S2;
+            if( _val_aux<0 ) _next_state = S2;
             else            _next_state = SS; // FIX. Wait cycles (?)
         end
         

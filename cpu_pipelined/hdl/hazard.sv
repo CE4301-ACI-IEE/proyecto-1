@@ -51,7 +51,7 @@ end
         end
     end
 
-    always@(posedge CLK)
+    always@(negedge CLK)
     begin
         
             PCWrPendingF    =   PCSrcD | PCSrcE | PCSrcM;
