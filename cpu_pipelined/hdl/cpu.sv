@@ -237,7 +237,7 @@ dmem #(48) ma_ram(
         .RD( _read_dmem )
     );
 
-mux2x1 #(48) mux_memory( CtrlM[5], _read_ma, _read_dmem, _read_data_m );
+mux2x1 #(48) mux_memory( CtrlM[5], _read_dmem, _read_ma, _read_data_m );
 //RegMW Logic //checked for 48 bits
 RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM),
 					.WA3M(wa3M), .ALUOutM(alu_outM), .ReadDataM(_read_data_m),	

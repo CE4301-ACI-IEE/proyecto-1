@@ -171,7 +171,7 @@ always_ff@( posedge CLK ) begin
     endcase
 end
 
-always_ff@( posedge CLK ) begin
+always_ff@( negedge CLK ) begin
     case( _state )
 
         SS: begin
@@ -193,7 +193,7 @@ always_ff@( posedge CLK ) begin
         end
 
         S_DONE: begin
-            //HANDSHAKE = 1'b1;
+            HANDSHAKE = 1'b0;
         end
 
     endcase
