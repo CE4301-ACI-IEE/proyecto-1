@@ -20,7 +20,7 @@ logic [4:0] WA3E_tmp;
 logic [SIZE-1:0] ALUResultE_temp, WriteDataE_temp;
 logic [6:0] Ctrl_tmp;
 
-always@(negedge CLK)//se debe cambiar por negedge
+always@(negedge CLK)
 begin
     PCSrcE2_tmp      = PCSrcE2;
     RegWriteE2_tmp   = RegWriteE2;

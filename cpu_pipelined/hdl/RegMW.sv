@@ -17,14 +17,14 @@ logic [4:0] WA3M_tmp;
 logic [SIZE-1:0] ALUOutM_temp, ReadDataM_temp;
 
 
-always@(negedge CLK)//se debe cambiar por negedge
+always@(negedge CLK)
 begin
-    PCSrcM_tmp       = PCSrcM;
-    RegWriteM_tmp    = RegWriteM;
-    MemToRegM_tmp    = MemToRegM;
-    WA3M_tmp         = WA3M;
-	ALUOutM_temp	 = ALUOutM;
-    ReadDataM_temp	 = ReadDataM;
+    PCSrcM_tmp       <= PCSrcM;
+    RegWriteM_tmp    <= RegWriteM;
+    MemToRegM_tmp    <= MemToRegM;
+    WA3M_tmp         <= WA3M;
+	ALUOutM_temp	 <= ALUOutM;
+    ReadDataM_temp	 <= ReadDataM;
 end
 
 assign PCSrcW       = PCSrcM_tmp;

@@ -26,8 +26,8 @@ module cpu_pipeline_tb;
 	
 	// Instantiate the Device Under Test (DUT)
 	cpu DUT(
-        .CLK( clk ),
-        //.MASTER_CLK( clk ),
+        //.CLK( clk ),
+        .MASTER_CLK( clk ),
         .Reset( reset ),
         .Instr( instr ),
         .ReadDataM( read_data ),

@@ -1,9 +1,4 @@
 kernel DCD -1,0,1
-loop REK R3,R0,R2
-ADDI R2,R2,1
-REK R4,R0,R2
-ADDI R2,R2,1
-REK R5,R0,R2
-SUB R2,R2,R2
-RKM R6,R0,R2
-B loop
+loop ADD R1,R2,R3
+CMP R1,R1
+BEQ loop

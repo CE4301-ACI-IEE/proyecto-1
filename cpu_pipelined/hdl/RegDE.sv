@@ -34,7 +34,7 @@ logic [6:0] Ctrl_tmp;
 
 always@(negedge CLK or posedge CLR)//se debe cambiar por negedge
 begin
-    if(CLR)
+    /**if(CLR)
     begin
         PCSrcD_tmp      = 1'b0;
         RegWriteD_tmp   = 1'b0;
@@ -53,7 +53,7 @@ begin
         RA1D_temp		= 5'b0000;
         RA2D_temp		= 5'b0000;
         Ctrl_tmp        = 7'd0;
-    end else begin
+    end else begin*/
         PCSrcD_tmp      <= PCSrcD;
         RegWriteD_tmp   <= RegWriteD;
         MemToRegD_tmp   <= MemToRegD;
@@ -71,7 +71,7 @@ begin
         RA1D_temp		<= RA1D;
         RA2D_temp		<= RA2D;
         Ctrl_tmp        <= CtrlD;
-    end
+    //end
 end
 
 assign PCSrcE       = PCSrcD_tmp;

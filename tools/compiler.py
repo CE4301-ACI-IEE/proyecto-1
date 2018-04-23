@@ -183,7 +183,7 @@ if (args > 1):
                     elif(instr_tmp == "CMP"):
                         if (len_reg == 2 and registers[1] in register):
                             a = bin(0+1<<25)
-                            instr += register[registers[0]] +  a[3::] + register[registers[2]]
+                            instr += register[registers[0]] +  a[3::] + register[registers[1]]
                         else:
                             sys.exit("It is the wrong instruction: %s" %instr_tmp)
 

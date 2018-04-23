@@ -53,6 +53,8 @@ module ALU
 			Result[47:32] 	= 16'b0;
 			Result[31:16] 	= PosC;
 			Result[15:0]	= OPERB[15:0];
+		end else if (ALUControlE==4'b1111) begin //Normal sum
+			Result = OPERA + OPERB;
 		end else begin
 			Result = {48{1'b1}};
 		end

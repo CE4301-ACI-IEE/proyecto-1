@@ -2,8 +2,8 @@
 
 // CPU module
 module cpu (
-	input logic CLK,
-	//input logic MASTER_CLK,
+	//input logic CLK,
+	input logic MASTER_CLK,
 	input logic Reset,
 	input logic [47:0] Instr, //Instruccion desde el instruction rom
 	input logic [47:0] ReadDataM, //Dato desde las memorias
@@ -21,7 +21,7 @@ module cpu (
 );
 
 // Condlogic wires
-logic cond_exE;
+logic cond_exE,CLK;
 logic [1:0]	flags;
 
 // Decoder wires
@@ -41,7 +41,7 @@ logic [47:0] alu_resultE;
 //Next PC logic wires
 logic [47:0] pc_temp;
 logic [47:0] pcF;
-logic [47:0] pc_next, pc_plus4;
+logic [47:0] pc_next, pc_plus4, pc_plus8;
 
 //Extend Unit Wires
 logic [47:0] ext_immD;
@@ -154,6 +154,7 @@ mux2x1 #(48) pc_mux2( .s(BranchTakenE), .d0(pc_temp), .d1(alu_resultE), .y(pc_ne
 RegPC  #(48)  pcreg(.RESET(Reset), .StallF(stallF), .CLK(CLK), .PC(pc_next), .PCF(pcF) );//checked for 48 bits
 //flopr #(32) pcreg( CLK, Reset, pc_next, pc );
 adder #(48) pcadd1( pcF, 48'd4, pc_plus4 ); //checked for 48 bits
+adder #(48) pcadd2( pc_plus4, 48'd4, pc_plus8 );
 //Diagrama la salida del adder pc_puls4 va directo a R15
 //adder #(32) pcadd2( CLK, pc_plus4, 32'd4, pc_plus8 );
 
@@ -209,17 +210,16 @@ RegEM #(48)	reg_em(	.CLK(CLK), .PCSrcE2(pc_srcE2), .RegWriteE2(reg_writeE2), .Me
 					.WA3M(wa3M), .ALUOutM(alu_outM), .WriteDataM(writedata_M), .CtrlE(CtrlE), .CtrlM(CtrlM));
 
 //Gate clock
-/*gate_clk gc(
+gate_clk gc(
 	.MASTER_CLK( MASTER_CLK ),
 	.WAIT_SIGNAL( CtrlM[6] ),
 	.HANDSHAKE( handshake ),
 	.CLK_CPU( CLK )
-);*/
+);
 
 //Memory access modules
 memory_access ma_KP(
-        .CLK( CLK ),
-        .CLK_MEM( 1'b1  ),
+        .CLK( MASTER_CLK ),
         .RESET( Reset ),
         .ENABLE( CtrlM[1] ),
         .CTRL( CtrlM[4:2] ),
@@ -236,7 +236,7 @@ dmem #(48) ma_ram(
         .RD( _read_dmem )
     );
 
-mux2x1 #(48) mux_memory( CtrlM[5], _read_ma, _read_dmem, _read_data_m );
+mux2x1 #(48) mux_memory( CtrlM[5], _read_ma,_read_dmem, _read_data_m );
 //RegMW Logic //checked for 48 bits
 RegMW #(48)	reg_mw(	.CLK(CLK), .PCSrcM(pc_srcM), .RegWriteM(reg_writeM), .MemToRegM(mem_to_regM),
 					.WA3M(wa3M), .ALUOutM(alu_outM), .ReadDataM(_read_data_m),	

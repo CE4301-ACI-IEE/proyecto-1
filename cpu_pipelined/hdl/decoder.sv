@@ -92,7 +92,7 @@ always@(*) begin
 				(ALUControl_temp==4'b0011 | ALUControl_temp==4'b0010);
 	end 
 	else begin
-		ALUControl_temp = 4'b0011; // add for branch and memory processing
+		ALUControl_temp = 4'b1111; // add for branch and memory processing
 		FlagW_temp = 2'b00; // don't update flags
 	end
 	
