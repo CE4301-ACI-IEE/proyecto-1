@@ -8,29 +8,22 @@ module condlogic_tb;
     logic reset;
     logic [3:0] cond;
     logic [3:0] alu_flags;
-    logic [1:0] flag_w;
-    logic pcs;
-    logic reg_w;
-    logic mem_w;
+    logic [1:0] flag_w,flagsE;
 	
 	//Outputs
-    logic pc_src;
-    logic reg_write;
-    logic mem_write;
+    logic [1:0] flags;
+    logic condexe;
 	
 	// Instantiate the Device Under Test (DUT)
 	condlogic DUT(
         .CLK( clk ),
         .Reset( reset ),
-        .Cond( cond ),
+        .CondE( cond ),
         .ALUFlags( alu_flags ),
-        .FlagW( flag_w ),
-        .PCS( pcs ),
-        .RegW( reg_w ),
-        .MemW( mem_w ),
-        .PCSrc( pc_src ),
-        .RegWrite( reg_write ),
-        .MemWrite( mem_write )
+        .FlagWriteE( flag_w ),
+        .FlagsE( flagsE ),
+        .Flags( flags ),
+        .CondExE( condexe )
     );
 
 	//Initialize clock
@@ -52,8 +45,31 @@ module condlogic_tb;
 
 		// Wait 20 ns for global reset to finish
 		#20;
-		
-		// Add stimulus here
+        
+        alu_flags = 4'd0;
+        flag_w = 2'd0;
+        flagsE = 2'd0;
+        #10;
+        
+        alu_flags = 4'd1;
+        flag_w = 2'd1;
+        flagsE = 2'd1;
+        #10;
+
+        alu_flags = 4'd2;
+        flag_w = 2'd0;
+        flagsE = 2'd1;
+        #10;
+
+        alu_flags = 4'd3;
+        flag_w = 2'd0;
+        flagsE = 2'd0;
+        #10;
+
+        alu_flags = 4'd4;
+        flag_w = 2'd2;
+        flagsE = 2'd1;
+        #10;
 
 	end
 	

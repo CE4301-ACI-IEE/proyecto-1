@@ -4,14 +4,14 @@ module instruction_rom_tb;
 	// Inputs
 	bit clk;
 	bit reset;
-    logic [31:0] address;
+    logic [47:0] address;
 	
 	//Outputs
-    logic [31:0] instr;
+    logic [47:0] instr;
 
 	// Instantiate the Device Under Test (DUT)
-    instruction_rom DUT( .CLK(clk), .RESET(reset), 
-				.address(address), .instr(instr) );
+    instruction_rom DUT( .CLK(clk), .Reset(reset), 
+				.Address(address), .Instr(instr) );
 
 	initial begin
 		clk = 1'b0;
@@ -25,7 +25,7 @@ module instruction_rom_tb;
 		// Initialize Inputs
 		clk = 0;
 		reset = 1;
-		address = 32'd0;
+		address = 48'd0;
 
 		// Wait 100 ns for global reset to finish
 		#10;
@@ -34,7 +34,7 @@ module instruction_rom_tb;
 		reset = 0;
 
 		for ( int i = 0 ; i < 10 ; i++ ) begin
-			address = address + 32'd4;
+			address = address + 48'd4;
 			#10;
 		end
 	end
